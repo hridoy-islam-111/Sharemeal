@@ -1,0 +1,11 @@
+{
+  "name": "sharemeal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ShareMeal Platform Root",
+  "scripts": {
+    "dev": "npm --prefix server run dev",
+    "server": "npm --prefix server run dev",
+    "start": "npm --prefix server start"
+  }
+}
