@@ -58,11 +58,30 @@ const updateVerificationStatus = async (id, status) => {
   return result.rows[0];
 };
 
+const updateUserProfile = async (id, { name, phone, email, address, nid, nid_pdf }) => {
+  const query = `
+    UPDATE users
+    SET 
+      name = COALESCE($1, name),
+      phone = COALESCE($2, phone),
+      email = COALESCE($3, email),
+      address = COALESCE($4, address),
+      nid = COALESCE($5, nid),
+      nid_pdf = COALESCE($6, nid_pdf)
+    WHERE id = $7
+    RETURNING id, name, phone, nid, email, address, role, verification_status, created_at;
+  `;
+  const values = [name, phone, email, address, nid, nid_pdf || null, id];
+  const result = await db.query(query, values);
+  return result.rows[0];
+};
+
 module.exports = {
   createUser,
   findById,
   findByPhone,
   findByEmail,
   findByRole,
-  updateVerificationStatus
+  updateVerificationStatus,
+  updateUserProfile
 };

@@ -12,7 +12,7 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '133146350441-uhsto639d
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 /**
- * Auth Controller handles user registration, login, profile retrieval & verification
+ * Auth Controller handles user registration, login, profile retrieval, update & verification
  */
 
 const register = async (req, res, next) => {
@@ -90,6 +90,8 @@ const login = async (req, res, next) => {
         name: user.name,
         phone: user.phone,
         email: user.email,
+        address: user.address,
+        nid: user.nid,
         role: user.role,
         verification_status: user.verification_status
       }
@@ -144,6 +146,8 @@ const googleAuth = async (req, res, next) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        address: user.address,
+        nid: user.nid,
         role: user.role,
         verification_status: user.verification_status
       }
@@ -161,6 +165,33 @@ const getMe = async (req, res, next) => {
       return res.status(404).json({ message: 'User not found' });
     }
     res.status(200).json({ user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateProfile = async (req, res, next) => {
+  try {
+    const { name, phone, email, address, nid } = req.body;
+    const nid_pdf = req.file ? req.file.buffer : null;
+
+    const updatedUser = await userModel.updateUserProfile(req.user.id, {
+      name,
+      phone,
+      email,
+      address,
+      nid,
+      nid_pdf
+    });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'Profile updated successfully',
+      user: updatedUser
+    });
   } catch (error) {
     next(error);
   }
@@ -184,5 +215,6 @@ module.exports = {
   login,
   googleAuth,
   getMe,
+  updateProfile,
   verifyUser
 };

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../../utils/constants';
 import { useAuth } from '../../context/AuthContext';
+import VerificationBanner from '../../components/common/VerificationBanner';
 import '../../App.css';
 
 const API_URL = `${API_BASE_URL}/food-posts`;
@@ -170,9 +171,13 @@ export const PostFood = () => {
     }
   };
 
+  const isVerified = user?.verification_status === 'verified';
+
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <section className="post-card">
+    <div style={{ minHeight: '100vh', background: '#fff9f5' }}>
+      <VerificationBanner />
+      <div className="p-6 max-w-4xl mx-auto">
+        <section className="post-card">
         <div className="steps">
           <div className="step current"><span>1</span><p>Food Info</p><b>&gt;</b></div>
           <div className="step"><span>2</span><p>Pickup Details</p><b>&gt;</b></div>
@@ -271,7 +276,17 @@ export const PostFood = () => {
           </div>
 
           <div className="form-actions">
-            <button className="continue-button" disabled={saving} type="submit">{saving ? 'Saving...' : editingId ? 'Update food' : 'Post food'}</button>
+            <button
+              className="continue-button"
+              disabled={saving || !isVerified}
+              type="submit"
+              style={{
+                opacity: !isVerified ? 0.6 : 1,
+                cursor: !isVerified ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {!isVerified ? '🔒 Profile Verification Pending' : saving ? 'Saving...' : editingId ? 'Update food' : 'Post food'}
+            </button>
             {editingId && (
               <button className="cancel-button" onClick={() => { setEditingId(null); setForm(emptyForm); }} type="button">Cancel</button>
             )}
@@ -317,6 +332,7 @@ export const PostFood = () => {
         )}
       </section>
     </div>
+  </div>
   );
 };
 

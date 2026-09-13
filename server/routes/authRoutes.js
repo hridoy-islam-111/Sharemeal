@@ -34,6 +34,7 @@ router.post('/register', signupLimiter, handleUpload, validateRegister, authCont
 router.post('/login', loginLimiter, validateLogin, authController.login);
 router.post('/google', authController.googleAuth);
 router.get('/me', protect, authController.getMe);
+router.put('/profile', protect, handleUpload, authController.updateProfile);
 router.patch('/verify/:id', protect, authController.verifyUser);
 
 module.exports = router;
