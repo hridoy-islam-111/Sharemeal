@@ -10,6 +10,7 @@ const {
 } = require('../controllers/foodPostController');
 
 const { foodPostLimiter } = require('../middleware/rateLimiter');
+const router = express.Router();
 
 router.post('/', foodPostLimiter, upload.single('image'), createFoodPost);
 router.get('/', getAllFoodPosts);
