@@ -112,7 +112,7 @@ export const NGOVerificationQueue = () => {
         )}
 
         {/* Search Bar & Dropdown Filter */}
-        <div style={{ display: 'flex', gap: '12px', height: '42px', marginBottom: '16px', alignItems: 'center', width: '100%' }}>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'center', width: '100%', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, height: '42px' }}>
             <input
               type="text"
@@ -352,7 +352,7 @@ export const NGOVerificationQueue = () => {
       {/* Pop-up Profile Modal */}
       {selectedUser && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 1000 }}>
-          <div style={{ width: '100%', maxWidth: '540px', background: '#ffffff', borderRadius: '20px', padding: '28px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320' }}>
+          <div style={{ width: '100%', maxWidth: '540px', background: '#ffffff', borderRadius: '20px', padding: '24px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320', maxHeight: '90vh', overflowY: 'auto' }}>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #eee5e0', paddingBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

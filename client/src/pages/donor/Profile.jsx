@@ -186,44 +186,44 @@ export const Profile = () => {
             </div>
           )}
 
-          <form onSubmit={handleUpdateProfile} style={{ display: 'grid', gap: '16px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-              <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320' }}>
+          <form onSubmit={handleUpdateProfile} style={{ display: 'grid', gap: '16px', width: '100%', boxSizing: 'border-box' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', width: '100%', boxSizing: 'border-box' }}>
+              <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320', width: '100%', boxSizing: 'border-box' }}>
                 <span>Full Name *</span>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 14 }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 14, boxSizing: 'border-box', outline: 'none' }}
                 />
               </label>
 
-              <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320' }}>
+              <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320', width: '100%', boxSizing: 'border-box' }}>
                 <span>Mobile Number *</span>
                 <input
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 14 }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 14, boxSizing: 'border-box', outline: 'none' }}
                 />
               </label>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-              <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', width: '100%', boxSizing: 'border-box' }}>
+              <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320', width: '100%', boxSizing: 'border-box' }}>
                 <span>Email Address *</span>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 14 }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 14, boxSizing: 'border-box', outline: 'none' }}
                 />
               </label>
 
-              <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320' }}>
+              <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320', width: '100%', boxSizing: 'border-box' }}>
                 <span>NID / ID Number *</span>
                 <input
                   type="text"
@@ -231,29 +231,29 @@ export const Profile = () => {
                   onChange={(e) => setNid(e.target.value)}
                   required
                   placeholder="1234567890"
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 14 }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 14, boxSizing: 'border-box', outline: 'none' }}
                 />
               </label>
             </div>
 
-            <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320' }}>
+            <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320', width: '100%', boxSizing: 'border-box' }}>
               <span>Pickup Address</span>
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="House, Road, Area, City"
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 14 }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 14, boxSizing: 'border-box', outline: 'none' }}
               />
             </label>
 
-            <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320' }}>
+            <label style={{ display: 'grid', gap: 6, fontSize: 13, fontWeight: 600, color: '#2c2320', width: '100%', boxSizing: 'border-box' }}>
               <span>NID Document (PDF or Image)</span>
               <input
                 type="file"
                 accept="application/pdf,image/*"
                 onChange={(e) => setNidPdf(e.target.files[0] || null)}
-                style={{ width: '100%', padding: '8px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 13 }}
+                style={{ width: '100%', padding: '8px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: 13, boxSizing: 'border-box', outline: 'none' }}
               />
               <span style={{ fontSize: 11, color: '#888', fontWeight: 400 }}>
                 Upload your official NID document for team verification. (Max 10MB)

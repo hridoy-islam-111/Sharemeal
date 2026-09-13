@@ -541,7 +541,8 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
                   position: 'absolute',
                   top: '52px',
                   right: 0,
-                  width: '360px',
+                  width: 'calc(100vw - 32px)',
+                  maxWidth: '380px',
                   background: '#ffffff',
                   borderRadius: '16px',
                   boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
@@ -606,7 +607,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
       {/* Activity Lifecycle Thread Modal */}
       {selectedNotification && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 3000 }}>
-          <div style={{ width: '100%', maxWidth: '520px', background: '#ffffff', borderRadius: '20px', padding: '28px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320' }}>
+          <div style={{ width: '100%', maxWidth: '520px', background: '#ffffff', borderRadius: '20px', padding: '24px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320', maxHeight: '90vh', overflowY: 'auto' }}>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #eee5e0', paddingBottom: '12px' }}>
               <div>
