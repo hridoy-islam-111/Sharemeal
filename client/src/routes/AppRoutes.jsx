@@ -16,6 +16,7 @@ import TermsOfService from '../pages/public/TermsOfService';
 import Login from '../pages/public/Login';
 import Signup from '../pages/public/Signup';
 import NgoLogin from '../pages/public/NgoLogin';
+import AdminLogin from '../pages/public/AdminLogin';
 
 // Donor Pages
 import DonorDashboard from '../pages/donor/Dashboard';
@@ -95,6 +96,8 @@ export const AppRoutes = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/ngo/login" element={<NgoLogin />} />
       <Route path="/ngo-portal" element={<NgoLogin />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/super-admin/login" element={<AdminLogin />} />
 
       {/* Donor Protected Routes */}
       <Route path="/donor/dashboard" element={<ProtectedRoute allowedRoles={['donor']}><DonorDashboard /></ProtectedRoute>} />

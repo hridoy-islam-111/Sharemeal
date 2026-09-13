@@ -7,12 +7,16 @@ try {
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const userModel = require('../models/userModel');
+const db = require('../config/db');
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '133146350441-uhsto639dp0j7379e809e83s3sis0kls.apps.googleusercontent.com';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
+// In-memory OTP Store for password recovery
+const otpStore = new Map();
+
 /**
- * Auth Controller handles user registration, login, profile retrieval, update & verification
+ * Auth Controller handles user registration, login, profile retrieval, update, verification & OTP reset
  */
 
 const register = async (req, res, next) => {
@@ -158,6 +162,68 @@ const googleAuth = async (req, res, next) => {
   }
 };
 
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email address is required' });
+    }
+
+    const user = await userModel.findByEmail(email);
+    if (!user) {
+      return res.status(200).json({ message: 'If an account exists with this email, an OTP code has been sent.' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 10 * 60 * 1000;
+
+    otpStore.set(email.toLowerCase(), { otp, expiresAt });
+
+    console.log(`\n==========================================`);
+    console.log(`🔑 PASSWORD RESET OTP FOR ${email}: [ ${otp} ]`);
+    console.log(`==========================================\n`);
+
+    res.status(200).json({
+      message: `OTP code generated for ${email}`,
+      otp
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: 'Email, OTP code, and new password are required' });
+    }
+
+    const record = otpStore.get(email.toLowerCase());
+    if (!record) {
+      return res.status(400).json({ message: 'Invalid or expired OTP code' });
+    }
+
+    if (Date.now() > record.expiresAt) {
+      otpStore.delete(email.toLowerCase());
+      return res.status(400).json({ message: 'OTP code has expired' });
+    }
+
+    if (record.otp !== otp.toString().trim()) {
+      return res.status(400).json({ message: 'Incorrect OTP code' });
+    }
+
+    const password_hash = await bcrypt.hash(newPassword, 10);
+    await db.query('UPDATE users SET password_hash = $1 WHERE email = $2', [password_hash, email]);
+
+    otpStore.delete(email.toLowerCase());
+
+    res.status(200).json({ message: 'Password reset successful! You can now log in.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getMe = async (req, res, next) => {
   try {
     const user = await userModel.findById(req.user.id);
@@ -214,6 +280,8 @@ module.exports = {
   signup: register,
   login,
   googleAuth,
+  forgotPassword,
+  resetPassword,
   getMe,
   updateProfile,
   verifyUser

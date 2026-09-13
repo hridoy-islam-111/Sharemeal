@@ -33,6 +33,8 @@ router.post('/signup', signupLimiter, handleUpload, validateRegister, authContro
 router.post('/register', signupLimiter, handleUpload, validateRegister, authController.register);
 router.post('/login', loginLimiter, validateLogin, authController.login);
 router.post('/google', authController.googleAuth);
+router.post('/forgot-password', authController.forgotPassword);
+router.post('/reset-password', authController.resetPassword);
 router.get('/me', protect, authController.getMe);
 router.put('/profile', protect, handleUpload, authController.updateProfile);
 router.patch('/verify/:id', protect, authController.verifyUser);
