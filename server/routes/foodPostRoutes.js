@@ -9,9 +9,9 @@ const {
   deleteFoodPost
 } = require('../controllers/foodPostController');
 
-const router = express.Router();
+const { foodPostLimiter } = require('../middleware/rateLimiter');
 
-router.post('/', upload.single('image'), createFoodPost);
+router.post('/', foodPostLimiter, upload.single('image'), createFoodPost);
 router.get('/', getAllFoodPosts);
 router.get('/:id', getFoodPostById);
 router.put('/:id', upload.single('image'), updateFoodPost);
