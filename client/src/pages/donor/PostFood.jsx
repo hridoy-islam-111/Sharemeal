@@ -53,7 +53,7 @@ export const PostFood = () => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
   };
 
-  // Device GPS Auto-Location Fetcher
+  // Device GPS Auto-Location & Reverse Geocoding Auto-Fill
   const handleDetectGps = () => {
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser.');
@@ -62,13 +62,40 @@ export const PostFood = () => {
 
     setGpsLoading(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
+        const lat = position.coords.latitude.toFixed(6);
+        const lon = position.coords.longitude.toFixed(6);
+
         setForm((current) => ({
           ...current,
-          latitude: position.coords.latitude.toFixed(6),
-          longitude: position.coords.longitude.toFixed(6),
+          latitude: lat,
+          longitude: lon,
         }));
-        setGpsLoading(false);
+
+        try {
+          // Auto Reverse-Geocode location into real Bangladesh District, Thana & Area
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+          const data = await res.json();
+          if (data && data.address) {
+            const addr = data.address;
+            const district = addr.city || addr.state_district || addr.state || 'Dhaka';
+            const thana = addr.suburb || addr.town || addr.county || addr.city_district || '';
+            const area_ward = addr.neighbourhood || addr.residential || addr.suburb || '';
+            const road_no = addr.road || addr.pedestrian || '';
+
+            setForm((current) => ({
+              ...current,
+              district: district || current.district,
+              thana: thana || current.thana,
+              area_ward: area_ward || current.area_ward,
+              road_no: road_no || current.road_no,
+            }));
+          }
+        } catch (e) {
+          console.warn('Reverse geocoding warning:', e);
+        } finally {
+          setGpsLoading(false);
+        }
       },
       (error) => {
         alert('Could not get device location: ' + error.message);
@@ -182,7 +209,7 @@ export const PostFood = () => {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0, color: '#2c2320' }}>📍 Exact Pickup Address Details</h3>
             
-            {/* Device Location Button Only */}
+            {/* Real GPS Device Location & Auto-Address Fill Button */}
             <button
               type="button"
               onClick={handleDetectGps}
@@ -202,7 +229,7 @@ export const PostFood = () => {
                 boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
               }}
             >
-              📍 {gpsLoading ? 'Detecting Location...' : form.latitude ? `✅ GPS Attached (${form.latitude}, ${form.longitude})` : 'Use My Device Location'}
+              📍 {gpsLoading ? 'Auto-filling Real Location...' : form.latitude ? `✅ Auto-Filled Real Location` : 'Auto-Fill From Real GPS Location'}
             </button>
           </div>
 
