@@ -17,6 +17,7 @@ import Login from '../pages/public/Login';
 import Signup from '../pages/public/Signup';
 import NgoLogin from '../pages/public/NgoLogin';
 import AdminLogin from '../pages/public/AdminLogin';
+import Stories from '../pages/public/Stories';
 
 // Donor Pages
 import DonorDashboard from '../pages/donor/Dashboard';
@@ -83,6 +84,7 @@ export const AppRoutes = () => {
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Home />} />
+      <Route path="/stories" element={<Stories />} />
       <Route path="/about" element={<About />} />
       <Route path="/how-it-works" element={<HowItWorks />} />
       <Route path="/donate" element={<DonateFood />} />

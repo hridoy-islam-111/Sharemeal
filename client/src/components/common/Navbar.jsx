@@ -37,6 +37,9 @@ export const Navbar = () => {
           >
             Donate
           </Link>
+          <Link to="/stories" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
+            Stories
+          </Link>
           
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

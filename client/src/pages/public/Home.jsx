@@ -14,6 +14,9 @@ export const Home = () => {
   const [emailInput, setEmailInput] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
+  // Mobile menu drawer state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   // Anonymous Mode interactive demo toggle in dark card
   const [demoAnonymous, setDemoAnonymous] = useState(true);
 
@@ -188,13 +191,13 @@ export const Home = () => {
             >
               Donate
             </Link>
-            <a href="#stories" className="nav-link-item" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
+            <Link to="/stories" className="nav-link-item" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
               Stories
-            </a>
+            </Link>
           </div>
 
-          {/* Right Action Buttons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {/* Right Action Buttons (Desktop / Tablet) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }} className="hidden sm:flex">
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <Link
@@ -238,7 +241,121 @@ export const Home = () => {
             )}
           </div>
 
+          {/* Mobile Hamburger Toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden"
+            aria-label="Toggle Navigation Menu"
+            style={{
+              background: 'transparent',
+              border: '1px solid rgba(44, 35, 32, 0.15)',
+              borderRadius: '10px',
+              padding: '6px 12px',
+              cursor: 'pointer',
+              fontSize: '18px',
+              color: '#2c2320',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
+
         </div>
+
+        {/* Mobile Dropdown Drawer */}
+        {mobileMenuOpen && (
+          <div
+            style={{
+              borderTop: '1px solid rgba(44, 35, 32, 0.08)',
+              background: '#fff9f5',
+              padding: '16px 24px 24px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px'
+            }}
+            className="md:hidden"
+          >
+            <a
+              href="#how-it-works"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '15px', fontWeight: 600, padding: '4px 0' }}
+            >
+              How it works
+            </a>
+            <Link
+              to="/find-food"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '15px', fontWeight: 600, padding: '4px 0' }}
+            >
+              Find food
+            </Link>
+            <Link
+              to={user ? (user.role === 'donor' ? '/donor/profile' : `/${user.role}/dashboard`) : '/donate'}
+              onClick={() => setMobileMenuOpen(false)}
+              style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '15px', fontWeight: 600, padding: '4px 0' }}
+            >
+              Donate
+            </Link>
+            <Link
+              to="/stories"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{ textDecoration: 'none', color: '#f04b28', fontSize: '15px', fontWeight: 700, padding: '4px 0' }}
+            >
+              Stories
+            </Link>
+            <div style={{ height: '1px', background: 'rgba(44, 35, 32, 0.08)', margin: '6px 0' }} />
+            {user ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <Link
+                  to={user.role === 'super_admin' ? '/super-admin/dashboard' : `/${user.role}/dashboard`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{ textDecoration: 'none', background: '#ffebe6', color: '#d9381e', padding: '10px 16px', borderRadius: '100px', fontSize: '14px', fontWeight: 700, textAlign: 'center' }}
+                >
+                  Dashboard ({user.name?.split(' ')[0]})
+                </Link>
+                <button
+                  onClick={() => { logout(); setMobileMenuOpen(false); }}
+                  style={{ background: 'transparent', border: 0, color: '#6b5d56', fontSize: '14px', fontWeight: 600, cursor: 'pointer', textAlign: 'center', padding: '8px 0' }}
+                >
+                  Log out
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{ textDecoration: 'none', color: '#2c2320', fontSize: '14px', fontWeight: 700, textAlign: 'center', padding: '10px 16px' }}
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="btn-primary-hover"
+                  style={{
+                    textDecoration: 'none',
+                    background: '#ff6b4a',
+                    color: '#ffffff',
+                    padding: '12px 20px',
+                    borderRadius: '100px',
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    boxShadow: '0 8px 20px rgba(255, 107, 74, 0.35)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  Get started <span>→</span>
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
       </nav>
 
       {/* ========================================================
@@ -893,49 +1010,64 @@ export const Home = () => {
       <section id="stories" style={{ padding: '0 24px 90px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           
-          <div style={{ marginBottom: '40px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f04b28', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: '8px' }}>
-              <span style={{ width: '24px', height: '2px', background: '#f04b28' }}></span> FROM THE FIELD
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f04b28', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: '8px' }}>
+                <span style={{ width: '24px', height: '2px', background: '#f04b28' }}></span> FROM THE FIELD
+              </div>
+              <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(30px, 4vw, 40px)', fontWeight: 800, color: '#2c2320', margin: 0 }}>
+                Latest stories
+              </h2>
             </div>
-            <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(30px, 4vw, 40px)', fontWeight: 800, color: '#2c2320', margin: 0 }}>
-              Latest stories
-            </h2>
+            <Link to="/stories" style={{ textDecoration: 'none', color: '#ff6b4a', fontSize: '14px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              View all stories <span>→</span>
+            </Link>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '28px' }}>
             {stories.map((story) => (
-              <div
+              <Link
                 key={story.id}
+                to="/stories"
                 className="story-card"
                 style={{
+                  textDecoration: 'none',
+                  color: 'inherit',
                   background: '#ffffff',
                   borderRadius: '24px',
                   overflow: 'hidden',
                   border: '1px solid rgba(44, 35, 32, 0.06)',
                   boxShadow: '0 8px 24px rgba(44, 35, 32, 0.04)',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
                 }}
               >
-                <div className="story-img-wrapper" style={{ height: '210px', width: '100%', overflow: 'hidden' }}>
-                  <img src={story.image} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <div style={{ padding: '22px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                    <span style={{ background: story.tagBg, color: story.tagColor, padding: '3px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: 800 }}>
-                      {story.tag}
-                    </span>
-                    <span style={{ fontSize: '12px', color: '#888' }}>
-                      🕒 {story.readTime}
-                    </span>
+                <div>
+                  <div className="story-img-wrapper" style={{ height: '210px', width: '100%', overflow: 'hidden' }}>
+                    <img src={story.image} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
-                  <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: '18px', fontWeight: 800, color: '#2c2320', lineHeight: 1.4, margin: '0 0 12px' }}>
-                    {story.title}
-                  </h3>
+                  <div style={{ padding: '22px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span style={{ background: story.tagBg, color: story.tagColor, padding: '3px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: 800 }}>
+                        {story.tag}
+                      </span>
+                      <span style={{ fontSize: '12px', color: '#888' }}>
+                        🕒 {story.readTime}
+                      </span>
+                    </div>
+                    <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: '18px', fontWeight: 800, color: '#2c2320', lineHeight: 1.4, margin: '0 0 12px' }}>
+                      {story.title}
+                    </h3>
+                  </div>
+                </div>
+                <div style={{ padding: '0 22px 22px' }}>
                   <span className="story-link" style={{ color: '#ff6b4a', fontSize: '13px', fontWeight: 700 }}>
                     Read story →
                   </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 
@@ -1233,7 +1365,7 @@ export const Home = () => {
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '10px', fontSize: '13px', color: '#6b5d56' }}>
                 <li><a href="#how-it-works" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>About us</a></li>
-                <li><a href="#stories" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>Stories</a></li>
+                <li><Link to="/stories" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>Stories</Link></li>
                 <li><span style={{ color: '#aaa' }}>Careers</span></li>
                 <li><span style={{ color: '#aaa' }}>Press kit</span></li>
                 <li><a href="mailto:contact@sharemeal.org" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>Contact</a></li>

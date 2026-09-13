@@ -10,8 +10,9 @@ const AppLayout = () => {
   const isAdminPage = location.pathname.startsWith('/admin') || location.pathname.startsWith('/super-admin');
   const isDashboardPage = location.pathname.startsWith('/donor') || location.pathname.startsWith('/ngo') || location.pathname.startsWith('/receiver');
   const isHomePage = location.pathname === '/';
+  const isStoriesPage = location.pathname === '/stories';
 
-  if (isAuthPage || isAdminPage || isDashboardPage || isHomePage) {
+  if (isAuthPage || isAdminPage || isDashboardPage || isHomePage || isStoriesPage) {
     return <AppRoutes />;
   }
 
