@@ -98,17 +98,17 @@ export const AdminUsers = () => {
 
   return (
     <AdminLayout title="Users & Staff">
-      <div style={{ maxWidth: '1110px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '1060px', margin: '0 auto' }}>
 
         {statusMsg && (
-          <div style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', marginBottom: '16px', fontWeight: 600 }}>
+          <div style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '10px 16px', borderRadius: '12px', fontSize: '13px', marginBottom: '16px', fontWeight: 600 }}>
             {statusMsg}
           </div>
         )}
 
         {/* Figma 42px Search Bar & Dropdown Control Bar */}
         <div style={{ display: 'flex', gap: '12px', height: '42px', marginBottom: '16px', alignItems: 'center' }}>
-          <div style={{ flex: 1, height: '42px', position: 'relative' }}>
+          <div style={{ flex: 1, height: '42px' }}>
             <input
               type="text"
               placeholder="Search name, email or mobile…"
@@ -124,12 +124,13 @@ export const AdminUsers = () => {
                 fontSize: '14px',
                 color: '#2c2320',
                 outline: 'none',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                fontFamily: "'Plus Jakarta Sans', sans-serif"
               }}
             />
           </div>
 
-          <div style={{ width: '160px', height: '42px' }}>
+          <div style={{ width: '151px', height: '42px' }}>
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
@@ -141,16 +142,17 @@ export const AdminUsers = () => {
                 border: '1px solid rgba(44, 35, 32, 0.1)',
                 background: '#ffffff',
                 fontSize: '14px',
-                fontWeight: 500,
+                fontWeight: 400,
                 color: '#2c2320',
                 outline: 'none',
                 cursor: 'pointer',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                fontFamily: "'Plus Jakarta Sans', sans-serif"
               }}
             >
-              <option value="all">All Roles</option>
+              <option value="all">All</option>
               <option value="donor">Donor</option>
-              <option value="receiver">Food Receiver</option>
+              <option value="receiver">Receiver</option>
               <option value="ngo">NGO Partner</option>
               <option value="admin">Super Admin</option>
             </select>
@@ -168,95 +170,114 @@ export const AdminUsers = () => {
           }}
         >
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', tableLayout: 'fixed' }}>
               <thead>
                 <tr
                   style={{
-                    height: '40px',
-                    background: '#fcf8f6',
+                    height: '40.5px',
+                    background: '#ffffff',
                     borderBottom: '1px solid rgba(44, 35, 32, 0.05)',
                     color: '#6b5d56',
                     fontSize: '12px',
                     fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.3px'
+                    textTransform: 'none'
                   }}
                 >
-                  <th style={{ padding: '0 20px', verticalAlign: 'middle' }}>User Details</th>
-                  <th style={{ padding: '0 20px', verticalAlign: 'middle' }}>Role</th>
-                  <th style={{ padding: '0 20px', verticalAlign: 'middle' }}>Mobile</th>
-                  <th style={{ padding: '0 20px', verticalAlign: 'middle' }}>Verification Status</th>
-                  <th style={{ padding: '0 20px', verticalAlign: 'middle', textAlign: 'right' }}>Actions</th>
+                  <th style={{ width: '180px', paddingLeft: '20px', verticalAlign: 'middle' }}>Name</th>
+                  <th style={{ width: '150px', paddingLeft: '12px', verticalAlign: 'middle' }}>Role</th>
+                  <th style={{ width: '170px', paddingLeft: '12px', verticalAlign: 'middle' }}>Mobile</th>
+                  <th style={{ width: '230px', paddingLeft: '12px', verticalAlign: 'middle' }}>Email</th>
+                  <th style={{ width: '110px', paddingLeft: '12px', verticalAlign: 'middle' }}>Status</th>
+                  <th style={{ width: '160px', paddingRight: '20px', verticalAlign: 'middle', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="5" style={{ padding: '32px', textAlign: 'center', color: '#6b5d56', fontSize: '14px' }}>Loading users database...</td>
+                    <td colSpan="6" style={{ padding: '32px', textAlign: 'center', color: '#6b5d56', fontSize: '14px' }}>Loading users database...</td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan="5" style={{ padding: '32px', textAlign: 'center', color: '#6b5d56', fontSize: '14px' }}>No users match your search.</td>
+                    <td colSpan="6" style={{ padding: '32px', textAlign: 'center', color: '#6b5d56', fontSize: '14px' }}>No users match your search.</td>
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
                     <tr
                       key={user.id}
                       style={{
-                        height: '56px',
+                        height: '49.5px',
                         borderBottom: '1px solid rgba(44, 35, 32, 0.05)',
                         transition: 'background 0.15s'
                       }}
                       onMouseOver={(e) => (e.currentTarget.style.background = '#fcf8f6')}
                       onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
                     >
-                      <td style={{ padding: '0 20px', verticalAlign: 'middle' }}>
-                        <div style={{ fontWeight: 600, fontSize: '14px', color: '#2c2320', lineHeight: '20px' }}>{user.name}</div>
-                        <div style={{ fontSize: '12px', color: '#6b5d56', lineHeight: '16px' }}>{user.email || 'No email registered'}</div>
+                      {/* Column 1: Name */}
+                      <td style={{ paddingLeft: '20px', verticalAlign: 'middle' }}>
+                        <div style={{ fontWeight: 600, fontSize: '14px', color: '#2c2320', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {user.name}
+                        </div>
                       </td>
 
-                      <td style={{ padding: '0 20px', verticalAlign: 'middle' }}>
+                      {/* Column 2: Role Pill */}
+                      <td style={{ paddingLeft: '12px', verticalAlign: 'middle' }}>
                         <span
                           style={{
-                            background: user.role === 'admin' ? '#ffe4db' : user.role === 'ngo' ? '#dcfce7' : user.role === 'donor' ? '#ffe4db' : '#fef3c7',
-                            color: user.role === 'admin' ? '#c8391b' : user.role === 'ngo' ? '#15803d' : user.role === 'donor' ? '#c8391b' : '#b45309',
-                            padding: '4px 12px',
+                            background: user.role === 'admin' ? '#ffe9e2' : user.role === 'ngo' ? '#e3f5ea' : user.role === 'donor' ? '#ffe9e2' : '#fff2d6',
+                            color: user.role === 'admin' ? '#c8391b' : user.role === 'ngo' ? '#227a55' : user.role === 'donor' ? '#c8391b' : '#a06c00',
+                            padding: '3px 10px',
                             borderRadius: '100px',
                             fontSize: '12px',
                             fontWeight: 600,
                             display: 'inline-block',
-                            textTransform: 'capitalize'
+                            textTransform: 'capitalize',
+                            lineHeight: '16px'
                           }}
                         >
                           {user.role}
                         </span>
                       </td>
 
-                      <td style={{ padding: '0 20px', verticalAlign: 'middle', fontSize: '14px', color: '#2c2320' }}>
+                      {/* Column 3: Mobile */}
+                      <td style={{ paddingLeft: '12px', verticalAlign: 'middle', fontSize: '14px', color: '#6b5d56', whiteSpace: 'nowrap' }}>
                         {user.phone}
                       </td>
 
-                      <td style={{ padding: '0 20px', verticalAlign: 'middle' }}>
+                      {/* Column 4: Email */}
+                      <td style={{ paddingLeft: '12px', verticalAlign: 'middle', fontSize: '14px', color: '#6b5d56', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {user.email || '—'}
+                      </td>
+
+                      {/* Column 5: Status Pill */}
+                      <td style={{ paddingLeft: '12px', verticalAlign: 'middle' }}>
                         <span
                           style={{
-                            background: user.verification_status === 'verified' ? '#ecfdf5' : '#fff7ed',
-                            color: user.verification_status === 'verified' ? '#047857' : '#c2410c',
-                            border: user.verification_status === 'verified' ? '1px solid #a7f3d0' : '1px solid #fed7aa',
-                            padding: '4px 12px',
+                            background: user.verification_status === 'verified' ? 'rgba(63, 185, 132, 0.14)' : 'rgba(245, 183, 62, 0.14)',
+                            color: user.verification_status === 'verified' ? '#227a55' : '#9a6b12',
+                            padding: '4px 10px',
                             borderRadius: '100px',
                             fontSize: '12px',
                             fontWeight: 600,
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '4px'
+                            gap: '6px'
                           }}
                         >
-                          {user.verification_status === 'verified' ? '✓ Verified' : '⏳ Pending'}
+                          <span
+                            style={{
+                              width: '6px',
+                              height: '6px',
+                              borderRadius: '50%',
+                              background: user.verification_status === 'verified' ? '#3fb984' : '#f5b73e'
+                            }}
+                          />
+                          {user.verification_status === 'verified' ? 'Active' : 'Pending'}
                         </span>
                       </td>
 
-                      <td style={{ padding: '0 20px', verticalAlign: 'middle', textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
+                      {/* Column 6: Action Buttons */}
+                      <td style={{ paddingRight: '20px', verticalAlign: 'middle', textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '10px', alignItems: 'center', justifyContent: 'flex-end' }}>
                           <button
                             type="button"
                             onClick={() => {
@@ -265,18 +286,16 @@ export const AdminUsers = () => {
                               setAdminNewPassword('');
                             }}
                             style={{
-                              background: '#ff684e',
-                              color: '#ffffff',
+                              background: 'transparent',
                               border: 0,
-                              borderRadius: '8px',
-                              padding: '6px 14px',
-                              fontSize: '12px',
+                              color: '#f04b28',
+                              fontSize: '13px',
                               fontWeight: 600,
                               cursor: 'pointer',
-                              boxShadow: '0px 2px 4px rgba(255,104,78,0.25)'
+                              padding: 0
                             }}
                           >
-                            👤 View Profile &amp; Pass
+                            View
                           </button>
 
                           {user.verification_status !== 'verified' ? (
@@ -287,26 +306,26 @@ export const AdminUsers = () => {
                                 background: '#10b981',
                                 color: '#ffffff',
                                 border: 0,
-                                borderRadius: '8px',
-                                padding: '6px 14px',
-                                fontSize: '12px',
-                                fontWeight: 600,
+                                borderRadius: '6px',
+                                padding: '4px 10px',
+                                fontSize: '11px',
+                                fontWeight: 700,
                                 cursor: 'pointer'
                               }}
                             >
-                              ✓ Verify User
+                              Verify
                             </button>
                           ) : (
                             <button
                               type="button"
                               onClick={() => handleVerify(user.id, 'pending')}
                               style={{
-                                background: '#ef4444',
-                                color: '#ffffff',
-                                border: 0,
-                                borderRadius: '8px',
-                                padding: '6px 12px',
-                                fontSize: '12px',
+                                background: 'transparent',
+                                border: '1px solid #fed7aa',
+                                color: '#c2410c',
+                                borderRadius: '6px',
+                                padding: '3px 8px',
+                                fontSize: '11px',
                                 fontWeight: 500,
                                 cursor: 'pointer'
                               }}
@@ -433,7 +452,7 @@ export const AdminUsers = () => {
                     handleVerify(selectedUser.id, 'verified');
                     setSelectedUser(null);
                   }}
-                  style={{ background: '#10b981', color: '#ffffff', border: 0, borderRadius: '10px', padding: '10px 18px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ background: '#10b981', color: '#ffffff', border: 0, borderRadius: '10px', padding: '10px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
                 >
                   Approve &amp; Verify User →
                 </button>
