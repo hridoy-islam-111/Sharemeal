@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ShareMeal - Create Food Post</title>
+</head>
+
+<body>
+
+    <h1>ShareMeal - Create Food Post</h1>
+
+    <label>Donor ID:</label>
+    <input type="number" id="donor_id" placeholder="Example: 1">
+
+    <br><br>
+
+    <label>Food Type:</label>
+    <input type="text" id="food_type" placeholder="Example: Rice">
+
+    <br><br>
+
+    <label>Quantity:</label>
+    <input type="number" id="quantity" placeholder="Example: 5">
+
+    <br><br>
+
+    <label>Expiry Time:</label>
+    <input type="datetime-local" id="expiry_time">
+
+    <br><br>
+
+    <label>Latitude:</label>
+    <input type="number" step="any" id="latitude" placeholder="Example: 23.8103">
+
+    <br><br>
+
+    <label>Longitude:</label>
+    <input type="number" step="any" id="longitude" placeholder="Example: 90.4125">
+
+    <br><br>
+
+    <button onclick="createFoodPost()">
+        Create Food Post
+    </button>
+
+    <h2>Response</h2>
+
+    <pre id="result"></pre>
+
+
+    <script>
+
+        async function createFoodPost() {
+
+            const donor_id =
+                document.getElementById("donor_id").value;
+
+            const food_type =
+                document.getElementById("food_type").value;
+
+            const quantity =
+                document.getElementById("quantity").value;
+
+            const expiry_time =
+                document.getElementById("expiry_time").value;
+
+            const latitude =
+                document.getElementById("latitude").value;
+
+            const longitude =
+                document.getElementById("longitude").value;
+
+
+            // Check required fields
+
+            if (
+                !donor_id ||
+                !food_type ||
+                !quantity ||
+                !expiry_time ||
+                !latitude ||
+                !longitude
+            ) {
+
+                alert("Please fill in all fields.");
+
+                return;
+            }
+
+
+            const data = {
+
+                donor_id: Number(donor_id),
+
+                food_type: food_type,
+
+                quantity: Number(quantity),
+
+                expiry_time: expiry_time,
+
+                latitude: Number(latitude),
+
+                longitude: Number(longitude)
+
+            };
+
+
+            try {
+
+                const response = await fetch(
+                    "/api/food-posts",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify(data)
+
+                    }
+                );
+
+
+                const result =
+                    await response.text();
+
+
+                document.getElementById("result").textContent =
+                    "Status: " +
+                    response.status +
+                    "\n\n" +
+                    result;
+
+            }
+
+            catch (error) {
+
+                document.getElementById("result").textContent =
+                    "Error: " +
+                    error.message;
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
