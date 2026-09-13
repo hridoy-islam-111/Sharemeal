@@ -98,95 +98,133 @@ export const AdminUsers = () => {
 
   return (
     <AdminLayout title="Users & Staff">
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        
-        {/* Figma Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 24 }}>👑</span>
-              <h1 style={{ fontSize: 24, fontWeight: 800, color: '#2c2320', margin: 0, fontFamily: "'Fraunces', serif" }}>
-                Users &amp; Staff Control Panel
-              </h1>
-            </div>
-            <p style={{ fontSize: 14, color: '#6b5d56', margin: '4px 0 0' }}>
-              Super Admin view for inspecting user profiles, credentials, NID documents, and verification decisions.
-            </p>
-          </div>
-
-          <div style={{ background: '#ffe4db', color: '#c8391b', padding: '6px 16px', borderRadius: 100, fontSize: 13, fontWeight: 700 }}>
-            Super Admin Portal Active
-          </div>
-        </div>
+      <div style={{ maxWidth: '1110px', margin: '0 auto' }}>
 
         {statusMsg && (
-          <div style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: 12, borderRadius: 12, fontSize: 13, marginBottom: 16 }}>
+          <div style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', marginBottom: '16px', fontWeight: 600 }}>
             {statusMsg}
           </div>
         )}
 
-        {/* Search & Filter Controls */}
-        <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-          <input
-            type="text"
-            placeholder="Search name, email or mobile number…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ flex: 1, minWidth: 260, padding: '12px 16px', borderRadius: 12, border: '1px solid rgba(44,35,32,0.1)', background: '#fff', fontSize: 14 }}
-          />
+        {/* Figma 42px Search Bar & Dropdown Control Bar */}
+        <div style={{ display: 'flex', gap: '12px', height: '42px', marginBottom: '16px', alignItems: 'center' }}>
+          <div style={{ flex: 1, height: '42px', position: 'relative' }}>
+            <input
+              type="text"
+              placeholder="Search name, email or mobile…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{
+                width: '100%',
+                height: '42px',
+                padding: '0 16px',
+                borderRadius: '12px',
+                border: '1px solid rgba(44, 35, 32, 0.1)',
+                background: '#ffffff',
+                fontSize: '14px',
+                color: '#2c2320',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            />
+          </div>
 
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            style={{ padding: '12px 16px', borderRadius: 12, border: '1px solid rgba(44,35,32,0.1)', background: '#fff', fontSize: 14, fontWeight: 600, color: '#2c2320' }}
-          >
-            <option value="all">All Roles</option>
-            <option value="donor">Donor</option>
-            <option value="receiver">Food Receiver</option>
-            <option value="ngo">NGO Partner</option>
-            <option value="admin">Super Admin</option>
-          </select>
+          <div style={{ width: '160px', height: '42px' }}>
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              style={{
+                width: '100%',
+                height: '42px',
+                padding: '0 16px',
+                borderRadius: '12px',
+                border: '1px solid rgba(44, 35, 32, 0.1)',
+                background: '#ffffff',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: '#2c2320',
+                outline: 'none',
+                cursor: 'pointer',
+                boxSizing: 'border-box'
+              }}
+            >
+              <option value="all">All Roles</option>
+              <option value="donor">Donor</option>
+              <option value="receiver">Food Receiver</option>
+              <option value="ngo">NGO Partner</option>
+              <option value="admin">Super Admin</option>
+            </select>
+          </div>
         </div>
 
-        {/* Users Table Card */}
-        <div style={{ background: '#fff', borderRadius: 16, border: '1px solid rgba(44,35,32,0.06)', overflow: 'hidden', boxShadow: '0 4px 20px rgba(44,35,32,0.04)' }}>
+        {/* Figma SectionCard Table */}
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: '16px',
+            border: '1px solid rgba(44, 35, 32, 0.05)',
+            overflow: 'hidden',
+            boxShadow: '0px 2px 4px rgba(44,35,32,0.03), 0px 12px 28px -12px rgba(255,107,74,0.18)'
+          }}
+        >
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 14 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
-                <tr style={{ background: '#fcf8f6', borderBottom: '1px solid #f0e8e4', color: '#6b5d56', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  <th style={{ padding: '14px 20px' }}>User Details</th>
-                  <th style={{ padding: '14px 20px' }}>Role</th>
-                  <th style={{ padding: '14px 20px' }}>Mobile</th>
-                  <th style={{ padding: '14px 20px' }}>Verification Status</th>
-                  <th style={{ padding: '14px 20px', textAlign: 'right' }}>Actions</th>
+                <tr
+                  style={{
+                    height: '40px',
+                    background: '#fcf8f6',
+                    borderBottom: '1px solid rgba(44, 35, 32, 0.05)',
+                    color: '#6b5d56',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.3px'
+                  }}
+                >
+                  <th style={{ padding: '0 20px', verticalAlign: 'middle' }}>User Details</th>
+                  <th style={{ padding: '0 20px', verticalAlign: 'middle' }}>Role</th>
+                  <th style={{ padding: '0 20px', verticalAlign: 'middle' }}>Mobile</th>
+                  <th style={{ padding: '0 20px', verticalAlign: 'middle' }}>Verification Status</th>
+                  <th style={{ padding: '0 20px', verticalAlign: 'middle', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="5" style={{ padding: 32, textAlign: 'center', color: '#888' }}>Loading users database...</td>
+                    <td colSpan="5" style={{ padding: '32px', textAlign: 'center', color: '#6b5d56', fontSize: '14px' }}>Loading users database...</td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan="5" style={{ padding: 32, textAlign: 'center', color: '#6b5d56' }}>No users match the search criteria.</td>
+                    <td colSpan="5" style={{ padding: '32px', textAlign: 'center', color: '#6b5d56', fontSize: '14px' }}>No users match your search.</td>
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
-                    <tr key={user.id} style={{ borderBottom: '1px solid #f8f3f0' }}>
-                      <td style={{ padding: '16px 20px' }}>
-                        <div style={{ fontWeight: 700, color: '#2c2320' }}>{user.name}</div>
-                        <div style={{ fontSize: 12, color: '#6b5d56' }}>{user.email || 'No email attached'}</div>
+                    <tr
+                      key={user.id}
+                      style={{
+                        height: '56px',
+                        borderBottom: '1px solid rgba(44, 35, 32, 0.05)',
+                        transition: 'background 0.15s'
+                      }}
+                      onMouseOver={(e) => (e.currentTarget.style.background = '#fcf8f6')}
+                      onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <td style={{ padding: '0 20px', verticalAlign: 'middle' }}>
+                        <div style={{ fontWeight: 600, fontSize: '14px', color: '#2c2320', lineHeight: '20px' }}>{user.name}</div>
+                        <div style={{ fontSize: '12px', color: '#6b5d56', lineHeight: '16px' }}>{user.email || 'No email registered'}</div>
                       </td>
 
-                      <td style={{ padding: '16px 20px' }}>
+                      <td style={{ padding: '0 20px', verticalAlign: 'middle' }}>
                         <span
                           style={{
-                            background: user.role === 'admin' ? '#ffe4db' : user.role === 'ngo' ? '#dcfce7' : user.role === 'donor' ? '#e0f2fe' : '#fef3c7',
-                            color: user.role === 'admin' ? '#c8391b' : user.role === 'ngo' ? '#15803d' : user.role === 'donor' ? '#0369a1' : '#b45309',
-                            padding: '4px 10px',
-                            borderRadius: 100,
-                            fontSize: 12,
-                            fontWeight: 700,
+                            background: user.role === 'admin' ? '#ffe4db' : user.role === 'ngo' ? '#dcfce7' : user.role === 'donor' ? '#ffe4db' : '#fef3c7',
+                            color: user.role === 'admin' ? '#c8391b' : user.role === 'ngo' ? '#15803d' : user.role === 'donor' ? '#c8391b' : '#b45309',
+                            padding: '4px 12px',
+                            borderRadius: '100px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            display: 'inline-block',
                             textTransform: 'capitalize'
                           }}
                         >
@@ -194,29 +232,31 @@ export const AdminUsers = () => {
                         </span>
                       </td>
 
-                      <td style={{ padding: '16px 20px', color: '#4a3f3a' }}>{user.phone}</td>
+                      <td style={{ padding: '0 20px', verticalAlign: 'middle', fontSize: '14px', color: '#2c2320' }}>
+                        {user.phone}
+                      </td>
 
-                      <td style={{ padding: '16px 20px' }}>
+                      <td style={{ padding: '0 20px', verticalAlign: 'middle' }}>
                         <span
                           style={{
                             background: user.verification_status === 'verified' ? '#ecfdf5' : '#fff7ed',
                             color: user.verification_status === 'verified' ? '#047857' : '#c2410c',
                             border: user.verification_status === 'verified' ? '1px solid #a7f3d0' : '1px solid #fed7aa',
                             padding: '4px 12px',
-                            borderRadius: 100,
-                            fontSize: 12,
-                            fontWeight: 700,
+                            borderRadius: '100px',
+                            fontSize: '12px',
+                            fontWeight: 600,
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: 4
+                            gap: '4px'
                           }}
                         >
                           {user.verification_status === 'verified' ? '✓ Verified' : '⏳ Pending'}
                         </span>
                       </td>
 
-                      <td style={{ padding: '16px 20px', textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: 8 }}>
+                      <td style={{ padding: '0 20px', verticalAlign: 'middle', textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
                           <button
                             type="button"
                             onClick={() => {
@@ -224,7 +264,17 @@ export const AdminUsers = () => {
                               setPasswordResetStatus('');
                               setAdminNewPassword('');
                             }}
-                            style={{ background: '#ff684e', color: '#fff', border: 0, borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                            style={{
+                              background: '#ff684e',
+                              color: '#ffffff',
+                              border: 0,
+                              borderRadius: '8px',
+                              padding: '6px 14px',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              boxShadow: '0px 2px 4px rgba(255,104,78,0.25)'
+                            }}
                           >
                             👤 View Profile &amp; Pass
                           </button>
@@ -233,7 +283,16 @@ export const AdminUsers = () => {
                             <button
                               type="button"
                               onClick={() => handleVerify(user.id, 'verified')}
-                              style={{ background: '#10b981', color: '#fff', border: 0, borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                              style={{
+                                background: '#10b981',
+                                color: '#ffffff',
+                                border: 0,
+                                borderRadius: '8px',
+                                padding: '6px 14px',
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                cursor: 'pointer'
+                              }}
                             >
                               ✓ Verify User
                             </button>
@@ -241,7 +300,16 @@ export const AdminUsers = () => {
                             <button
                               type="button"
                               onClick={() => handleVerify(user.id, 'pending')}
-                              style={{ background: '#ef4444', color: '#fff', border: 0, borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                              style={{
+                                background: '#ef4444',
+                                color: '#ffffff',
+                                border: 0,
+                                borderRadius: '8px',
+                                padding: '6px 12px',
+                                fontSize: '12px',
+                                fontWeight: 500,
+                                cursor: 'pointer'
+                              }}
                             >
                               Revoke
                             </button>
@@ -259,19 +327,19 @@ export const AdminUsers = () => {
 
       {/* Super Admin Pop-up Modal: User Full Profile & Password Display */}
       {selectedUser && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, zIndex: 1000 }}>
-          <div style={{ width: '100%', maxWidth: 540, background: '#fff', borderRadius: 20, padding: 28, boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 1000 }}>
+          <div style={{ width: '100%', maxWidth: '540px', background: '#ffffff', borderRadius: '20px', padding: '28px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320' }}>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, borderBottom: '1px solid #eee5e0', pb: 12 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 20 }}>👤</span>
-                <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>User Profile &amp; Security Credentials</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #eee5e0', paddingBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '20px' }}>👤</span>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700 }}>User Profile &amp; Security Credentials</h3>
               </div>
-              <button onClick={() => setSelectedUser(null)} style={{ background: 'transparent', border: 0, fontSize: 20, cursor: 'pointer', color: '#888' }}>✕</button>
+              <button onClick={() => setSelectedUser(null)} style={{ background: 'transparent', border: 0, fontSize: '20px', cursor: 'pointer', color: '#888' }}>✕</button>
             </div>
 
-            {/* Profile Overview Card */}
-            <div style={{ display: 'grid', gap: 10, fontSize: 13, background: '#fcf8f6', padding: 16, borderRadius: 14, border: '1px solid #eee5e0', marginBottom: 16 }}>
+            {/* Profile Details Card */}
+            <div style={{ display: 'grid', gap: '10px', fontSize: '13px', background: '#fcf8f6', padding: '16px', borderRadius: '14px', border: '1px solid #eee5e0', marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#6b5d56' }}>User ID:</span>
                 <strong>#{selectedUser.id}</strong>
@@ -293,10 +361,10 @@ export const AdminUsers = () => {
                 <strong>{selectedUser.email || 'None'}</strong>
               </div>
               
-              {/* Account Password Field */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '6px 10px', borderRadius: 8, border: '1px solid #f0e8e4' }}>
+              {/* Password Display Field */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#ffffff', padding: '8px 12px', borderRadius: '8px', border: '1px solid #f0e8e4' }}>
                 <span style={{ color: '#9a3412', fontWeight: 700 }}>🔑 Account Password:</span>
-                <span style={{ fontFamily: 'monospace', background: '#ffe4db', color: '#c8391b', padding: '3px 10px', borderRadius: 6, fontWeight: 800, fontSize: 14 }}>
+                <span style={{ fontFamily: 'monospace', background: '#ffe4db', color: '#c8391b', padding: '3px 10px', borderRadius: '6px', fontWeight: 700, fontSize: '14px' }}>
                   {selectedUser.plain_password || 'Secret123!'}
                 </span>
               </div>
@@ -317,31 +385,31 @@ export const AdminUsers = () => {
               </div>
             </div>
 
-            {/* Super Admin Password Change Section */}
-            <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 14, padding: 16 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#9a3412', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+            {/* Super Admin Password Change Form */}
+            <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '14px', padding: '16px' }}>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: '#9a3412', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 ⚙️ Change Password for {selectedUser.name}
               </div>
 
               {passwordResetStatus && (
-                <div style={{ fontSize: 12, padding: 8, borderRadius: 8, background: '#fff', border: '1px solid #fdba74', marginBottom: 10 }}>
+                <div style={{ fontSize: '12px', padding: '8px', borderRadius: '8px', background: '#ffffff', border: '1px solid #fdba74', marginBottom: '10px' }}>
                   {passwordResetStatus}
                 </div>
               )}
 
-              <form onSubmit={handleAdminResetPassword} style={{ display: 'flex', gap: 10 }}>
+              <form onSubmit={handleAdminResetPassword} style={{ display: 'flex', gap: '10px' }}>
                 <input
                   type="text"
                   placeholder="Enter new password"
                   value={adminNewPassword}
                   onChange={(e) => setAdminNewPassword(e.target.value)}
                   required
-                  style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #fdba74', fontSize: 13, background: '#fff' }}
+                  style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid #fdba74', fontSize: '13px', background: '#ffffff', outline: 'none' }}
                 />
                 <button
                   type="submit"
                   disabled={passwordResetLoading}
-                  style={{ background: '#ea580c', color: '#fff', border: 0, borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                  style={{ background: '#ea580c', color: '#ffffff', border: 0, borderRadius: '8px', padding: '8px 14px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
                 >
                   {passwordResetLoading ? 'Updating...' : 'Set Password'}
                 </button>
@@ -349,11 +417,11 @@ export const AdminUsers = () => {
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
               <button
                 type="button"
                 onClick={() => setSelectedUser(null)}
-                style={{ background: '#f3f4f6', color: '#374151', border: 0, borderRadius: 10, padding: '10px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                style={{ background: '#f3f4f6', color: '#374151', border: 0, borderRadius: '10px', padding: '10px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
               >
                 Close Pop-up
               </button>
@@ -365,7 +433,7 @@ export const AdminUsers = () => {
                     handleVerify(selectedUser.id, 'verified');
                     setSelectedUser(null);
                   }}
-                  style={{ background: '#10b981', color: '#fff', border: 0, borderRadius: 10, padding: '10px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                  style={{ background: '#10b981', color: '#ffffff', border: 0, borderRadius: '10px', padding: '10px 18px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
                 >
                   Approve &amp; Verify User →
                 </button>
