@@ -49,11 +49,27 @@ const getNidDocument = async (req, res, next) => {
     const { userId } = req.params;
     const result = await db.query('SELECT nid_pdf, name FROM users WHERE id = $1', [userId]);
     if (result.rows.length === 0 || !result.rows[0].nid_pdf) {
-      return res.status(404).send('NID Document file not uploaded or found');
+      return res.status(404).send('NID Document file not uploaded or found for this user.');
     }
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename="nid-user-${userId}.pdf"`);
-    res.send(result.rows[0].nid_pdf);
+
+    const buffer = result.rows[0].nid_pdf;
+    const headerHex = buffer.toString('hex', 0, 4).toLowerCase();
+
+    if (headerHex.startsWith('25504446')) {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="nid-${userId}.pdf"`);
+    } else if (headerHex.startsWith('89504e47')) {
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Content-Disposition', `inline; filename="nid-${userId}.png"`);
+    } else if (headerHex.startsWith('ffd8')) {
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Content-Disposition', `inline; filename="nid-${userId}.jpg"`);
+    } else {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="nid-${userId}.pdf"`);
+    }
+
+    res.send(buffer);
   } catch (error) {
     next(error);
   }

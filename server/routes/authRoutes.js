@@ -10,8 +10,10 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
   fileFilter: (req, file, cb) => {
-    if (file.mimetype !== 'application/pdf') {
-      return cb(new Error('Only PDF files are allowed for NID upload'), false);
+    const isPdf = file.mimetype === 'application/pdf';
+    const isImage = file.mimetype.startsWith('image/');
+    if (!isPdf && !isImage) {
+      return cb(new Error('Only PDF documents or image files (JPG, PNG) are allowed for NID upload'), false);
     }
     cb(null, true);
   },
