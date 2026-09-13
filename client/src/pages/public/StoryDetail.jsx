@@ -1,24 +1,57 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { allStories } from '../../data/storiesData';
+import { allStories, getStoryById } from '../../data/storiesData';
 import './Home.css';
 
-export const Stories = () => {
+export const StoryDetail = () => {
   const { user, logout } = useAuth();
+  const { id } = useParams();
 
-  // Active Filter Tab state: 'All' | 'Volunteer' | 'Impact' | 'Donor'
-  const [activeFilter, setActiveFilter] = useState('All');
+  // Load current story based on URL param (defaults to Dev Malhotra's story from Figma)
+  const story = getStoryById(id);
 
   // Mobile menu drawer state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Reader Modal state
-  const [selectedStory, setSelectedStory] = useState(null);
+  // Like interaction state
+  const [likes, setLikes] = useState(story.initialLikes || 41);
+  const [hasLiked, setHasLiked] = useState(false);
 
-  // Newsletter Subscription state
+  // Share interaction state (Toast notification)
+  const [showShareToast, setShowShareToast] = useState(false);
+
+  // Newsletter state
   const [emailInput, setEmailInput] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+
+  // Reset likes and scroll to top when story changes
+  useEffect(() => {
+    setLikes(story.initialLikes || 41);
+    setHasLiked(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [id, story]);
+
+  const handleLike = () => {
+    if (hasLiked) {
+      setLikes(prev => prev - 1);
+      setHasLiked(false);
+    } else {
+      setLikes(prev => prev + 1);
+      setHasLiked(true);
+    }
+  };
+
+  const handleShare = () => {
+    const url = window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+    }
+    setShowShareToast(true);
+    setTimeout(() => {
+      setShowShareToast(false);
+    }, 3000);
+  };
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -28,19 +61,14 @@ export const Stories = () => {
     }
   };
 
-  // Filtered Stories list for the grid
-  const filteredStories = activeFilter === 'All'
-    ? allStories
-    : allStories.filter(story => story.category.toLowerCase() === activeFilter.toLowerCase());
-
-  // Two prominent spotlight stories
-  const featuredStories = allStories.filter(s => s.featured);
+  // 2 related stories for the "More stories" section
+  const moreStories = allStories.filter(s => s.id !== story.id).slice(0, 2);
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff9f5', color: '#2c2320', fontFamily: "'Plus Jakarta Sans', sans-serif", overflowX: 'hidden' }}>
       
       {/* ========================================================
-          1. NAVIGATION BAR (Matching Home Pixel-Perfect Navbar)
+          1. NAVIGATION BAR (Matching Home & Stories)
       ======================================================== */}
       <nav style={{ width: '100%', background: 'rgba(255, 249, 245, 0.95)', backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 1000, borderBottom: '1px solid rgba(44, 35, 32, 0.06)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -55,7 +83,7 @@ export const Stories = () => {
             </span>
           </Link>
 
-          {/* Center Nav Links */}
+          {/* Center Nav Links (Desktop) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }} className="hidden md:flex">
             <Link to="/#how-it-works" className="nav-link-item" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
               How it works
@@ -238,208 +266,449 @@ export const Stories = () => {
       </nav>
 
       {/* ========================================================
-          2. STORIES PAGE HERO HEADER (From Figma Node 8:29407)
+          2. HERO PHOTOGRAPHY BANNER (From Figma Node 8:29807)
       ======================================================== */}
-      <section style={{ position: 'relative', overflow: 'hidden', padding: '60px 24px 48px', textAlign: 'center' }}>
-        
-        {/* Ambient Glows */}
-        <div style={{ position: 'absolute', top: '-60px', left: '-80px', width: '340px', height: '340px', borderRadius: '50%', background: 'rgba(255, 199, 182, 0.5)', filter: 'blur(75px)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: '40px', right: '-80px', width: '320px', height: '320px', borderRadius: '50%', background: '#fff2d6', filter: 'blur(75px)', opacity: 0.7, pointerEvents: 'none' }} />
+      <section style={{ position: 'relative', width: '100%', height: 'clamp(320px, 42vw, 440px)', overflow: 'hidden', background: '#fdf1e9' }}>
+        <img
+          src={story.bannerImage || story.cardImage}
+          alt={story.title}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
 
-        <div style={{ maxWidth: '820px', margin: '0 auto', position: 'relative', zIndex: 10 }}>
-          
-          {/* Stories from the field Pill Chip */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ffe4db', padding: '6px 16px', borderRadius: '100px', marginBottom: '20px' }}>
-            <span style={{ fontSize: '14px' }}>📖</span>
-            <span style={{ fontSize: '12px', fontWeight: 800, color: '#c8391b', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-              Stories from the field
+        {/* Ambient Gradient Overlay Fading into Warm Background */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage:
+              'linear-gradient(to top, #fff9f5 0%, rgba(255, 249, 245, 0.85) 12%, rgba(255, 249, 245, 0.4) 30%, rgba(44, 35, 32, 0.35) 60%, rgba(44, 35, 32, 0.15) 100%)',
+            pointerEvents: 'none'
+          }}
+        />
+
+        {/* Tag Pill in Top Left of Hero Image */}
+        <div style={{ position: 'absolute', top: '24px', left: '24px', zIndex: 10 }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: story.tagBg || '#f0e9fb',
+              padding: '6px 14px',
+              borderRadius: '100px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+            }}
+          >
+            <span style={{ fontSize: '13px' }}>{story.tagIcon || '🤝'}</span>
+            <span style={{ fontSize: '12px', fontWeight: 800, color: story.tagColor || '#6b46c1' }}>
+              {story.category}
             </span>
           </div>
-
-          {/* Heading with styled coral accent */}
-          <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(36px, 5.5vw, 60px)', fontWeight: 800, color: '#2c2320', lineHeight: 1.15, margin: '0 0 18px', letterSpacing: '-1.5px' }}>
-            Meals, moments &amp; <br />
-            <span style={{ color: '#f04b28' }}>the people behind them</span>
-          </h1>
-
-          <p style={{ fontSize: 'clamp(16px, 2vw, 18px)', lineHeight: 1.6, color: '#6b5d56', maxWidth: '600px', margin: '0 auto' }}>
-            Real accounts from donors, volunteers, and community members building a more generous city — one meal at a time.
-          </p>
-
         </div>
       </section>
 
       {/* ========================================================
-          3. FEATURED SPOTLIGHT STORIES (From Figma Node 8:29421)
+          3. OVERLAPPING ARTICLE HEADER CARD (From Figma Node 8:29816)
       ======================================================== */}
-      <section style={{ padding: '0 24px 60px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: '28px' }}>
-            {featuredStories.map((story) => (
-              <div
-                key={story.id}
-                onClick={() => setSelectedStory(story)}
-                className="story-card"
+      <div style={{ maxWidth: '720px', margin: '-72px auto 0', padding: '0 20px', position: 'relative', zIndex: 20 }}>
+        
+        {/* Floating White Card */}
+        <div
+          style={{
+            background: 'rgba(255, 255, 255, 0.98)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: '24px',
+            padding: 'clamp(24px, 4vw, 36px)',
+            border: '1px solid rgba(44, 35, 32, 0.08)',
+            boxShadow: '0 10px 30px rgba(255, 107, 74, 0.14), 0 24px 60px rgba(44, 35, 32, 0.1)'
+          }}
+        >
+          {/* Main Fraunces Headline */}
+          <h1
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontSize: 'clamp(26px, 4vw, 38px)',
+              fontWeight: 800,
+              color: '#2c2320',
+              lineHeight: 1.25,
+              margin: '0 0 12px',
+              letterSpacing: '-0.8px'
+            }}
+          >
+            {story.title}
+          </h1>
+
+          {/* Subtitle */}
+          <p style={{ fontSize: '16px', lineHeight: 1.6, color: '#6b5d56', margin: '0 0 24px' }}>
+            {story.summary}
+          </p>
+
+          {/* Author Metadata & Actions Bar */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderTop: '1px solid rgba(44, 35, 32, 0.08)',
+              paddingTop: '20px',
+              flexWrap: 'wrap',
+              gap: '16px'
+            }}
+          >
+            {/* Author Avatar & Info */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <img
+                src={story.authorAvatar}
+                alt={story.author}
+                style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #ffebe6' }}
+              />
+              <div>
+                <div style={{ fontSize: '14px', fontWeight: 800, color: '#2c2320' }}>
+                  {story.author}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', color: '#6b5d56', marginTop: '2px' }}>
+                  <span>📅 {story.date}</span>
+                  <span>⏱️ {story.readTime}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Like & Share Action Buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {/* Like Button */}
+              <button
+                onClick={handleLike}
+                aria-label="Like story"
                 style={{
-                  background: '#ffffff',
-                  borderRadius: '24px',
-                  overflow: 'hidden',
-                  border: '1px solid rgba(44, 35, 32, 0.06)',
-                  boxShadow: '0 8px 24px rgba(44, 35, 32, 0.05)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: hasLiked ? '#ffebe6' : 'rgba(44, 35, 32, 0.05)',
+                  border: hasLiked ? '1px solid #ff6b4a' : '1px solid transparent',
+                  padding: '8px 16px',
+                  borderRadius: '100px',
+                  color: hasLiked ? '#d9381e' : '#6b5d56',
+                  fontSize: '14px',
+                  fontWeight: 700,
                   cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between'
+                  transition: 'all 0.25s cubic-bezier(0.25, 1, 0.5, 1)'
                 }}
               >
-                <div>
-                  {/* Image with Tag Overlay */}
-                  <div className="story-img-wrapper" style={{ position: 'relative', height: '260px', width: '100%', overflow: 'hidden' }}>
-                    <img src={story.image} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(44, 35, 32, 0.65) 0%, rgba(44, 35, 32, 0.1) 50%, transparent 100%)' }} />
-                    
-                    {/* Badge */}
-                    <div style={{ position: 'absolute', bottom: '16px', left: '16px', display: 'flex', alignItems: 'center', gap: '6px', background: story.tagBg, padding: '4px 12px', borderRadius: '100px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
-                      <span style={{ fontSize: '11px' }}>{story.tagIcon}</span>
-                      <span style={{ fontSize: '12px', fontWeight: 800, color: story.tagColor }}>
-                        {story.category}
-                      </span>
-                    </div>
-                  </div>
+                <span>{hasLiked ? '❤️' : '🤍'}</span>
+                <span>{likes}</span>
+              </button>
 
-                  {/* Body Content */}
-                  <div style={{ padding: '24px 24px 12px' }}>
-                    <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(20px, 2.5vw, 24px)', fontWeight: 800, color: '#2c2320', lineHeight: 1.35, margin: '0 0 12px' }}>
-                      {story.title}
-                    </h2>
-                    <p style={{ fontSize: '14px', lineHeight: 1.6, color: '#6b5d56', margin: 0 }}>
-                      {story.summary}
-                    </p>
-                  </div>
-                </div>
+              {/* Share Button */}
+              <button
+                onClick={handleShare}
+                aria-label="Share story"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'rgba(44, 35, 32, 0.05)',
+                  border: '1px solid transparent',
+                  padding: '8px 16px',
+                  borderRadius: '100px',
+                  color: '#6b5d56',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.25s ease'
+                }}
+              >
+                <span>🔗</span>
+                <span>Share</span>
+              </button>
+            </div>
 
-                {/* Author & Read Time Footer */}
-                <div style={{ padding: '16px 24px 24px', borderTop: '1px solid #f7f3f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <img src={story.authorAvatar} alt={story.author} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
-                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#4a3e39' }}>{story.author}</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: '#8c7e77' }}>
-                    <span>📅 {story.date}</span>
-                    <span>🕒 {story.readTime}</span>
-                  </div>
-                </div>
-
-              </div>
-            ))}
           </div>
 
         </div>
-      </section>
+
+      </div>
+
+      {/* Share Toast Notification */}
+      {showShareToast && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '30px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: '#2c2320',
+            color: '#ffffff',
+            padding: '12px 24px',
+            borderRadius: '100px',
+            fontSize: '14px',
+            fontWeight: 700,
+            boxShadow: '0 12px 30px rgba(0,0,0,0.25)',
+            zIndex: 3000,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          <span>✓</span> Link copied to clipboard!
+        </div>
+      )}
 
       {/* ========================================================
-          4. ALL STORIES FILTERABLE GRID (From Figma Node 8:29487)
+          4. ARTICLE BODY NARRATIVE (From Figma Node 8:29856)
       ======================================================== */}
-      <section style={{ padding: '0 24px 80px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          
-          {/* Section Title & Filter Tabs Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '36px', flexWrap: 'wrap', gap: '18px' }}>
-            <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(24px, 3.5vw, 32px)', fontWeight: 800, color: '#2c2320', margin: 0 }}>
-              All Stories
-            </h2>
+      <article style={{ maxWidth: '680px', margin: '36px auto 0', padding: '0 20px' }}>
+        
+        {/* Paragraphs Before Quote */}
+        {story.paragraphsBeforeQuote?.map((para, index) => (
+          <p
+            key={index}
+            style={{
+              fontSize: '16px',
+              lineHeight: 1.8,
+              color: '#2c2320',
+              margin: '0 0 20px'
+            }}
+          >
+            {para}
+          </p>
+        ))}
 
-            {/* Filter Pills */}
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {['All', 'Volunteer', 'Impact', 'Donor'].map((tab) => {
-                const isActive = activeFilter === tab;
-                return (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveFilter(tab)}
-                    style={{
-                      padding: '8px 20px',
-                      borderRadius: '100px',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      border: isActive ? '1px solid #ff6b4a' : '1px solid rgba(44, 35, 32, 0.1)',
-                      background: isActive ? '#ff6b4a' : '#ffffff',
-                      color: isActive ? '#ffffff' : '#6b5d56',
-                      boxShadow: isActive ? '0 4px 14px rgba(255, 107, 74, 0.35)' : 'none',
-                      transition: 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)'
-                    }}
-                  >
-                    {tab}
-                  </button>
-                );
-              })}
+        {/* Highlight Pullquote Card */}
+        {story.quote && (
+          <div
+            style={{
+              position: 'relative',
+              background: '#ffffff',
+              borderLeft: '4px solid #ff8461',
+              borderRadius: '18px',
+              padding: '24px 28px 24px 36px',
+              margin: '36px 0',
+              boxShadow: '0 4px 12px rgba(44, 35, 32, 0.04), 0 16px 36px rgba(255, 107, 74, 0.12)'
+            }}
+          >
+            {/* Large Decorative Quote Glyph */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '-8px',
+                left: '12px',
+                fontFamily: "'Fraunces', serif",
+                fontSize: '52px',
+                fontWeight: 800,
+                color: '#ffc7b6',
+                lineHeight: 1,
+                pointerEvents: 'none',
+                userSelect: 'none'
+              }}
+            >
+              “
+            </div>
+
+            <p
+              style={{
+                fontFamily: "'Fraunces', serif",
+                fontStyle: 'italic',
+                fontWeight: 600,
+                fontSize: '18px',
+                lineHeight: 1.55,
+                color: '#2c2320',
+                margin: 0
+              }}
+            >
+              "{story.quote}"
+            </p>
+          </div>
+        )}
+
+        {/* Subheading */}
+        {story.subheading && (
+          <h2
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontSize: '24px',
+              fontWeight: 800,
+              color: '#2c2320',
+              margin: '36px 0 14px',
+              lineHeight: 1.3
+            }}
+          >
+            {story.subheading}
+          </h2>
+        )}
+
+        {/* Paragraphs After Quote */}
+        {story.paragraphsAfterQuote?.map((para, index) => (
+          <p
+            key={index}
+            style={{
+              fontSize: '16px',
+              lineHeight: 1.8,
+              color: '#2c2320',
+              margin: '0 0 20px'
+            }}
+          >
+            {para}
+          </p>
+        ))}
+
+        {/* Bottom Author Signoff & Interaction Bar */}
+        <div
+          style={{
+            borderTop: '1px solid rgba(44, 35, 32, 0.08)',
+            padding: '28px 0',
+            marginTop: '44px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '16px'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <img
+              src={story.authorAvatar}
+              alt={story.author}
+              style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover' }}
+            />
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: 800, color: '#2c2320' }}>
+                {story.author}
+              </div>
+              <div style={{ fontSize: '12px', color: '#6b5d56' }}>
+                {story.authorRole || 'ShareMeal contributor'}
+              </div>
             </div>
           </div>
 
-          {/* 3-Column Responsive Stories Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '24px' }}>
-            {filteredStories.map((story) => (
-              <div
-                key={story.id}
-                onClick={() => setSelectedStory(story)}
+          <button
+            onClick={handleLike}
+            style={{
+              background: hasLiked ? '#ffebe6' : '#ffffff',
+              border: hasLiked ? '1px solid #ff6b4a' : '1px solid rgba(44, 35, 32, 0.12)',
+              borderRadius: '100px',
+              padding: '8px 20px',
+              fontSize: '14px',
+              fontWeight: 700,
+              color: hasLiked ? '#d9381e' : '#6b5d56',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.25s ease'
+            }}
+          >
+            <span>{hasLiked ? '❤️' : '🤍'}</span>
+            <span>{hasLiked ? 'Liked' : 'Like this story'}</span>
+          </button>
+        </div>
+
+        {/* ========================================================
+            5. MORE STORIES SECTION (From Figma Node 8:29886)
+        ======================================================== */}
+        <div style={{ paddingTop: '56px', paddingBottom: '60px' }}>
+          <h3
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontSize: '24px',
+              fontWeight: 800,
+              color: '#2c2320',
+              margin: '0 0 24px'
+            }}
+          >
+            More stories
+          </h3>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+              gap: '20px',
+              marginBottom: '32px'
+            }}
+          >
+            {moreStories.map(s => (
+              <Link
+                key={s.id}
+                to={`/stories/${s.id}`}
                 className="story-card"
                 style={{
+                  textDecoration: 'none',
+                  color: 'inherit',
                   background: '#ffffff',
-                  borderRadius: '20px',
+                  borderRadius: '18px',
                   overflow: 'hidden',
                   border: '1px solid rgba(44, 35, 32, 0.06)',
-                  boxShadow: '0 8px 24px rgba(44, 35, 32, 0.04)',
-                  cursor: 'pointer',
+                  boxShadow: '0 6px 20px rgba(44, 35, 32, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
+                  cursor: 'pointer'
                 }}
               >
                 <div>
-                  {/* Photo with Tag Badge */}
-                  <div className="story-img-wrapper" style={{ position: 'relative', height: '185px', width: '100%', overflow: 'hidden' }}>
-                    <img src={story.image} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <span style={{ position: 'absolute', top: '12px', left: '12px', background: story.tagBg, color: story.tagColor, padding: '4px 12px', borderRadius: '100px', fontSize: '11px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 6px rgba(0,0,0,0.1)' }}>
-                      <span>{story.tagIcon}</span> {story.category}
-                    </span>
+                  <div style={{ height: '150px', width: '100%', overflow: 'hidden', position: 'relative' }}>
+                    <img
+                      src={s.cardImage}
+                      alt={s.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    <div style={{ position: 'absolute', top: '10px', left: '10px', background: s.tagBg, color: s.tagColor, padding: '3px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span>{s.tagIcon}</span> {s.category}
+                    </div>
                   </div>
-
-                  {/* Body Details */}
-                  <div style={{ padding: '20px 20px 12px' }}>
-                    <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: '18px', fontWeight: 800, color: '#2c2320', lineHeight: 1.4, margin: '0 0 8px' }}>
-                      {story.title}
-                    </h3>
-                    <p style={{ fontSize: '13px', lineHeight: 1.6, color: '#6b5d56', margin: 0 }}>
-                      {story.summary}
-                    </p>
+                  <div style={{ padding: '16px' }}>
+                    <h4
+                      style={{
+                        fontFamily: "'Fraunces', serif",
+                        fontSize: '16px',
+                        fontWeight: 800,
+                        color: '#2c2320',
+                        lineHeight: 1.4,
+                        margin: '0 0 10px'
+                      }}
+                    >
+                      {s.title}
+                    </h4>
                   </div>
                 </div>
 
-                {/* Card Bottom Meta */}
-                <div style={{ padding: '14px 20px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #f7f3f0' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <img src={story.authorAvatar} alt={story.author} style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }} />
-                    <span style={{ fontSize: '12px', fontWeight: 600, color: '#4a3e39' }}>{story.author}</span>
-                  </div>
-                  <span style={{ fontSize: '12px', color: '#8c7e77', fontWeight: 600 }}>
-                    🕒 {story.readTime}
-                  </span>
+                <div style={{ padding: '0 16px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: '#6b5d56' }}>
+                  <span>⏱️ {s.readTime}</span>
+                  <span style={{ color: '#ff6b4a', fontWeight: 700 }}>Read →</span>
                 </div>
-
-              </div>
+              </Link>
             ))}
           </div>
 
+          {/* All Stories Button */}
+          <Link
+            to="/stories"
+            className="btn-secondary-hover"
+            style={{
+              textDecoration: 'none',
+              background: '#ffffff',
+              border: '1.5px solid #ffc7b6',
+              color: '#c8391b',
+              padding: '10px 22px',
+              borderRadius: '100px',
+              fontSize: '14px',
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+          >
+            <span>←</span> All stories
+          </Link>
         </div>
-      </section>
+
+      </article>
 
       {/* ========================================================
-          5. DUAL CTA SECTION (From Figma Node 8:29647)
+          6. DUAL CTA SECTION (From Figma Node 8:29914)
       ======================================================== */}
       <section style={{ padding: '0 24px 80px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '24px' }}>
+        <div style={{ maxWidth: '1152px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '24px' }}>
           
           {/* Card 1: Give Food */}
           <div
@@ -525,11 +794,10 @@ export const Stories = () => {
       </section>
 
       {/* ========================================================
-          6. NEWSLETTER / DIGEST (From Figma Node 8:29685)
+          7. NEWSLETTER / DIGEST (From Figma Node 8:29952)
       ======================================================== */}
       <section style={{ padding: '0 24px 90px' }}>
-        <div style={{ maxWidth: '840px', margin: '0 auto' }}>
-          
+        <div style={{ maxWidth: '896px', margin: '0 auto' }}>
           <div
             style={{
               background: '#ffffff',
@@ -593,15 +861,14 @@ export const Stories = () => {
             )}
 
           </div>
-
         </div>
       </section>
 
       {/* ========================================================
-          7. 4-COLUMN FOOTER (From Figma Node 8:29703)
+          8. 4-COLUMN FOOTER (From Figma Node 8:29970)
       ======================================================== */}
       <footer style={{ background: '#fdf1e9', borderTop: '1px solid #ffe4db', padding: '70px 24px 40px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '1152px', margin: '0 auto' }}>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '48px', marginBottom: '60px' }}>
             
@@ -645,7 +912,7 @@ export const Stories = () => {
                 </li>
                 <li><Link to="/ngo/login" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>For NGOs</Link></li>
                 <li><Link to="/#how-it-works" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>How it works</Link></li>
-                <li><span style={{ color: '#aaa' }}>Pricing (Free)</span></li>
+                <li><span style={{ color: '#aaa' }}>Pricing</span></li>
               </ul>
             </div>
 
@@ -666,11 +933,11 @@ export const Stories = () => {
             {/* Col 4: Support */}
             <div>
               <h4 style={{ fontSize: '13px', fontWeight: 800, color: '#2c2320', textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 16px' }}>
-                Support &amp; Trust
+                Support
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '10px', fontSize: '13px', color: '#6b5d56' }}>
                 <li><a href="mailto:help@sharemeal.org" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>Help centre</a></li>
-                <li><span className="footer-link" style={{ color: '#6b5d56', cursor: 'pointer' }}>Safety protocols</span></li>
+                <li><span className="footer-link" style={{ color: '#6b5d56', cursor: 'pointer' }}>Safety</span></li>
                 <li><span className="footer-link" style={{ color: '#6b5d56', cursor: 'pointer' }}>Privacy policy</span></li>
                 <li><span className="footer-link" style={{ color: '#6b5d56', cursor: 'pointer' }}>Terms of service</span></li>
                 <li><Link to="/admin/login" className="footer-link" style={{ textDecoration: 'none', color: '#ff6b4a', fontWeight: 700 }}>Admin Portal</Link></li>
@@ -692,120 +959,8 @@ export const Stories = () => {
         </div>
       </footer>
 
-      {/* ========================================================
-          8. STORY READER MODAL (Interactive Reading Experience)
-      ======================================================== */}
-      {selectedStory && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 3000 }}>
-          <div style={{ width: '100%', maxWidth: '640px', maxHeight: '90vh', overflowY: 'auto', background: '#ffffff', borderRadius: '28px', color: '#2c2320', boxShadow: '0 24px 60px rgba(0,0,0,0.3)', position: 'relative' }}>
-            
-            {/* Header Image */}
-            <div style={{ position: 'relative', height: '240px', width: '100%', overflow: 'hidden' }}>
-              <img src={selectedStory.image} alt={selectedStory.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <button
-                onClick={() => setSelectedStory(null)}
-                style={{
-                  position: 'absolute',
-                  top: '16px',
-                  right: '16px',
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '50%',
-                  background: 'rgba(0,0,0,0.6)',
-                  color: '#ffffff',
-                  border: 0,
-                  fontSize: '18px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  backdropFilter: 'blur(4px)'
-                }}
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Content Body */}
-            <div style={{ padding: '28px 32px 36px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-                <span style={{ background: selectedStory.tagBg, color: selectedStory.tagColor, padding: '4px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: 800 }}>
-                  {selectedStory.tagIcon} {selectedStory.category}
-                </span>
-                <span style={{ fontSize: '13px', color: '#888' }}>
-                  🕒 {selectedStory.readTime}
-                </span>
-              </div>
-
-              <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: '26px', fontWeight: 800, color: '#2c2320', lineHeight: 1.3, margin: '0 0 16px' }}>
-                {selectedStory.title}
-              </h2>
-
-              {/* Author & Stats Row */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: '#faf5f2', borderRadius: '16px', marginBottom: '24px', flexWrap: 'wrap', gap: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <img src={selectedStory.authorAvatar} alt={selectedStory.author} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
-                  <div>
-                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#2c2320' }}>{selectedStory.author}</div>
-                    <div style={{ fontSize: '11px', color: '#888' }}>{selectedStory.date}</div>
-                  </div>
-                </div>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#ff6b4a' }}>
-                  ✨ {selectedStory.stats}
-                </div>
-              </div>
-
-              {/* Story Narrative */}
-              <div style={{ fontSize: '15px', lineHeight: 1.8, color: '#4a3e39', whiteSpace: 'pre-line' }}>
-                {selectedStory.fullStory}
-              </div>
-
-              {/* Actions */}
-              <div style={{ marginTop: '32px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px', flexWrap: 'wrap' }}>
-                <button
-                  onClick={() => setSelectedStory(null)}
-                  style={{
-                    background: 'transparent',
-                    color: '#6b5d56',
-                    border: '1px solid rgba(44, 35, 32, 0.15)',
-                    padding: '11px 22px',
-                    borderRadius: '100px',
-                    fontSize: '14px',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Close Story
-                </button>
-                <Link
-                  to={`/stories/${selectedStory.id}`}
-                  style={{
-                    textDecoration: 'none',
-                    background: '#ff6b4a',
-                    color: '#ffffff',
-                    padding: '12px 24px',
-                    borderRadius: '100px',
-                    fontSize: '14px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 14px rgba(255, 107, 74, 0.3)',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  Read full page article <span>→</span>
-                </Link>
-              </div>
-
-            </div>
-
-          </div>
-        </div>
-      )}
-
     </div>
   );
 };
 
-export default Stories;
+export default StoryDetail;
