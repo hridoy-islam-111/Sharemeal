@@ -11,8 +11,11 @@ export const AdminUsers = () => {
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusMsg, setStatusMsg] = useState('');
 
-  // NID Modal state
+  // Selected User Profile Pop-up Modal state
   const [selectedUser, setSelectedUser] = useState(null);
+  const [adminNewPassword, setAdminNewPassword] = useState('');
+  const [passwordResetStatus, setPasswordResetStatus] = useState('');
+  const [passwordResetLoading, setPasswordResetLoading] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -53,6 +56,34 @@ export const AdminUsers = () => {
     }
   };
 
+  const handleAdminResetPassword = async (e) => {
+    e.preventDefault();
+    if (!selectedUser || !adminNewPassword) return;
+
+    setPasswordResetLoading(true);
+    setPasswordResetStatus('');
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/admin/reset-password/${selectedUser.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ newPassword: adminNewPassword })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Password reset failed');
+
+      setPasswordResetStatus(`✅ Password for ${selectedUser.name} updated to "${adminNewPassword}"!`);
+      setAdminNewPassword('');
+    } catch (err) {
+      setPasswordResetStatus(`❌ ${err.message}`);
+    } finally {
+      setPasswordResetLoading(false);
+    }
+  };
+
   const filteredUsers = users.filter((u) => {
     const matchesSearch =
       (u.name || '').toLowerCase().includes(search.toLowerCase()) ||
@@ -72,16 +103,16 @@ export const AdminUsers = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ fontSize: 24 }}>👑</span>
               <h1 style={{ fontSize: 24, fontWeight: 800, color: '#2c2320', margin: 0, fontFamily: "'Fraunces', serif" }}>
-                Users &amp; Verification Panel
+                Users &amp; Staff Control Panel
               </h1>
             </div>
             <p style={{ fontSize: 14, color: '#6b5d56', margin: '4px 0 0' }}>
-              Inspect registered Donors, Receivers, and NGOs. Verify NID documents to grant full access.
+              Super Admin view for inspecting user profiles, credentials, NID documents, and verification decisions.
             </p>
           </div>
 
           <div style={{ background: '#ffe4db', color: '#c8391b', padding: '6px 16px', borderRadius: 100, fontSize: 13, fontWeight: 700 }}>
-            Super Admin Access Active
+            Super Admin Portal Active
           </div>
         </div>
 
@@ -185,10 +216,14 @@ export const AdminUsers = () => {
                         <div style={{ display: 'inline-flex', gap: 8 }}>
                           <button
                             type="button"
-                            onClick={() => setSelectedUser(user)}
-                            style={{ background: '#f3f4f6', color: '#374151', border: 0, borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setPasswordResetStatus('');
+                              setAdminNewPassword('');
+                            }}
+                            style={{ background: '#ff684e', color: '#fff', border: 0, borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                           >
-                            📄 View NID
+                            👤 View Profile &amp; Pass
                           </button>
 
                           {user.verification_status !== 'verified' ? (
@@ -219,31 +254,100 @@ export const AdminUsers = () => {
         </div>
       </div>
 
-      {/* View NID & Details Modal */}
+      {/* Super Admin Pop-up Modal: User Full Profile & Password Management */}
       {selectedUser && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, zIndex: 1000 }}>
-          <div style={{ width: '100%', maxWidth: 500, background: '#fff', borderRadius: 20, padding: 28, boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>📄 User NID &amp; Verification Document</h3>
-              <button onClick={() => setSelectedUser(null)} style={{ background: 'transparent', border: 0, fontSize: 20, cursor: 'pointer' }}>✕</button>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, zIndex: 1000 }}>
+          <div style={{ width: '100%', maxWidth: 540, background: '#fff', borderRadius: 20, padding: 28, boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320' }}>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, borderBottom: '1px solid #eee5e0', pb: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 20 }}>👤</span>
+                <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>User Profile &amp; Security Credentials</h3>
+              </div>
+              <button onClick={() => setSelectedUser(null)} style={{ background: 'transparent', border: 0, fontSize: 20, cursor: 'pointer', color: '#888' }}>✕</button>
             </div>
 
-            <div style={{ display: 'grid', gap: 10, fontSize: 14, background: '#fcf8f6', padding: 16, borderRadius: 12, border: '1px solid #eee5e0', marginBottom: 16 }}>
-              <div><strong>Name:</strong> {selectedUser.name}</div>
-              <div><strong>Role:</strong> <span style={{ textTransform: 'capitalize' }}>{selectedUser.role}</span></div>
-              <div><strong>Mobile:</strong> {selectedUser.phone}</div>
-              <div><strong>Email:</strong> {selectedUser.email || 'N/A'}</div>
-              <div><strong>NID Number:</strong> {selectedUser.nid || 'Not provided'}</div>
-              <div><strong>Address:</strong> {selectedUser.address || 'Not provided'}</div>
+            {/* Profile Overview Card */}
+            <div style={{ display: 'grid', gap: 10, fontSize: 13, background: '#fcf8f6', padding: 16, borderRadius: 14, border: '1px solid #eee5e0', marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#6b5d56' }}>User ID:</span>
+                <strong>#{selectedUser.id}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#6b5d56' }}>Full Name:</span>
+                <strong>{selectedUser.name}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#6b5d56' }}>System Role:</span>
+                <strong style={{ textTransform: 'capitalize', color: '#f04b28' }}>{selectedUser.role}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#6b5d56' }}>Mobile Number:</span>
+                <strong>{selectedUser.phone}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#6b5d56' }}>Email Address:</span>
+                <strong>{selectedUser.email || 'None'}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#6b5d56' }}>NID Number:</span>
+                <strong>{selectedUser.nid || 'Not provided'}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#6b5d56' }}>Pickup Address:</span>
+                <strong>{selectedUser.address || 'Not provided'}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#6b5d56' }}>Verification Status:</span>
+                <strong style={{ color: selectedUser.verification_status === 'verified' ? '#047857' : '#c2410c' }}>
+                  {selectedUser.verification_status === 'verified' ? '✓ Verified' : '⏳ Pending'}
+                </strong>
+              </div>
             </div>
 
+            {/* Super Admin Password Management Section */}
+            <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 14, padding: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#9a3412', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                🔑 Super Admin Password Control
+              </div>
+              
+              <div style={{ fontSize: 12, color: '#7c2d12', marginBottom: 12 }}>
+                Passwords in ShareMeal are protected with 256-bit Bcrypt encryption. As Super Admin, you can directly set or override a new password for <strong>{selectedUser.name}</strong>:
+              </div>
+
+              {passwordResetStatus && (
+                <div style={{ fontSize: 12, padding: 8, borderRadius: 8, background: '#fff', border: '1px solid #fdba74', marginBottom: 10 }}>
+                  {passwordResetStatus}
+                </div>
+              )}
+
+              <form onSubmit={handleAdminResetPassword} style={{ display: 'flex', gap: 10 }}>
+                <input
+                  type="text"
+                  placeholder="Type new password for this user"
+                  value={adminNewPassword}
+                  onChange={(e) => setAdminNewPassword(e.target.value)}
+                  required
+                  style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #fdba74', fontSize: 13, background: '#fff' }}
+                />
+                <button
+                  type="submit"
+                  disabled={passwordResetLoading}
+                  style={{ background: '#ea580c', color: '#fff', border: 0, borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                >
+                  {passwordResetLoading ? 'Updating...' : 'Set Password'}
+                </button>
+              </form>
+            </div>
+
+            {/* Action Buttons */}
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
               <button
                 type="button"
                 onClick={() => setSelectedUser(null)}
                 style={{ background: '#f3f4f6', color: '#374151', border: 0, borderRadius: 10, padding: '10px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
               >
-                Close
+                Close Pop-up
               </button>
 
               {selectedUser.verification_status !== 'verified' && (
@@ -255,10 +359,11 @@ export const AdminUsers = () => {
                   }}
                   style={{ background: '#10b981', color: '#fff', border: 0, borderRadius: 10, padding: '10px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
                 >
-                  Approve &amp; Verify Now →
+                  Approve &amp; Verify User →
                 </button>
               )}
             </div>
+
           </div>
         </div>
       )}

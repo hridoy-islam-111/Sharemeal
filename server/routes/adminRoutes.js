@@ -10,6 +10,7 @@ router.get('/stats', adminController.getDashboardStats);
 router.get('/users', adminController.getAllUsers);
 router.get('/ngo-queue', adminController.getNgoVerificationQueue);
 router.patch('/ngo-verify/:id', adminController.verifyNgo);
+router.patch('/reset-password/:id', adminController.resetUserPasswordByAdmin);
 router.get('/bot-alerts', adminController.getBotAlerts);
 
 module.exports = router;
