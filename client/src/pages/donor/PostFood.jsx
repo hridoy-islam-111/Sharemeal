@@ -197,9 +197,9 @@ export const PostFood = () => {
             ))}
           </div>
 
-          {/* Form grid without manual Donor ID field */}
+          {/* Quantity & Expiry time in the same row */}
           <div className="form-grid">
-            <label style={{ gridColumn: 'span 2' }}>
+            <label>
               <span>Quantity *</span>
               <input min="1" name="quantity" onChange={changeField} placeholder="e.g. 12 meals" required type="number" value={form.quantity} />
             </label>
