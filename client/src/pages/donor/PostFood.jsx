@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../../utils/constants';
+import { useAuth } from '../../context/AuthContext';
 import '../../App.css';
 
 const API_URL = `${API_BASE_URL}/food-posts`;
 
 const emptyForm = {
-  donor_id: '',
   food_type: 'Veg',
   quantity: '',
   expiry_time: '',
@@ -26,6 +26,7 @@ const foodTypes = [
 ];
 
 export const PostFood = () => {
+  const { user } = useAuth();
   const [form, setForm] = useState(emptyForm);
   const [foodPosts, setFoodPosts] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -73,7 +74,6 @@ export const PostFood = () => {
         }));
 
         try {
-          // Auto Reverse-Geocode location into real Bangladesh District, Thana & Area
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
           const data = await res.json();
           if (data && data.address) {
@@ -112,7 +112,7 @@ export const PostFood = () => {
 
     const payload = {
       ...form,
-      donor_id: Number(form.donor_id) || 1,
+      donor_id: user?.id || 1, // Automatically attaches logged-in donor ID
       quantity: Number(form.quantity),
       latitude: form.latitude ? Number(form.latitude) : null,
       longitude: form.longitude ? Number(form.longitude) : null,
@@ -141,7 +141,6 @@ export const PostFood = () => {
   const editFoodPost = (foodPost) => {
     setEditingId(foodPost.id);
     setForm({
-      donor_id: foodPost.donor_id || '',
       food_type: foodPost.food_type || 'Veg',
       quantity: foodPost.quantity || '',
       expiry_time: foodPost.expiry_time ? new Date(foodPost.expiry_time).toISOString().slice(0, 16) : '',
@@ -198,10 +197,16 @@ export const PostFood = () => {
             ))}
           </div>
 
+          {/* Form grid without manual Donor ID field */}
           <div className="form-grid">
-            <label><span>Donor ID</span><input name="donor_id" onChange={changeField} placeholder="e.g. 1" required value={form.donor_id} /></label>
-            <label><span>Quantity</span><input min="1" name="quantity" onChange={changeField} placeholder="e.g. 12 meals" required type="number" value={form.quantity} /></label>
-            <label><span>Expiry time</span><input name="expiry_time" onChange={changeField} required type="datetime-local" value={form.expiry_time} /></label>
+            <label style={{ gridColumn: 'span 2' }}>
+              <span>Quantity *</span>
+              <input min="1" name="quantity" onChange={changeField} placeholder="e.g. 12 meals" required type="number" value={form.quantity} />
+            </label>
+            <label>
+              <span>Expiry time *</span>
+              <input name="expiry_time" onChange={changeField} required type="datetime-local" value={form.expiry_time} />
+            </label>
           </div>
 
           <hr style={{ margin: '20px 0 16px', border: 0, borderTop: '1px solid #eee9e7' }} />
@@ -209,7 +214,6 @@ export const PostFood = () => {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0, color: '#2c2320' }}>📍 Exact Pickup Address Details</h3>
             
-            {/* Real GPS Device Location & Auto-Address Fill Button */}
             <button
               type="button"
               onClick={handleDetectGps}
@@ -290,11 +294,17 @@ export const PostFood = () => {
                 <div>
                   <strong>{post.food_type} ({post.quantity} meals)</strong>
                   <span>Expires: {new Date(post.expiry_time).toLocaleString()}</span>
+                  
+                  {/* Private Donor Name - Visible to NGO / Admin */}
+                  <div style={{ fontSize: 12, color: '#059669', fontWeight: 600, marginTop: 4 }}>
+                    👤 <strong>Donor:</strong> {post.donor_name || user?.name || 'Abdur Rahman'} <span style={{ fontSize: 11, color: '#6b5d56', fontWeight: 400 }}>(Visible only to Verified NGO Partners)</span>
+                  </div>
+
                   <div style={{ fontSize: 12, color: '#4a3f3a', marginTop: 4 }}>
                     📍 <strong>Address:</strong> {[post.house_no, post.road_no, post.floor_flat, post.area_ward, post.thana, post.district].filter(Boolean).join(', ') || 'Address not specified'}
                   </div>
                   {post.latitude && post.longitude && (
-                    <small style={{ color: '#059669', fontWeight: 600 }}>📍 GPS Pin: {post.latitude}, {post.longitude}</small>
+                    <small style={{ color: '#059669', fontWeight: 600 }}>📍 GPS Pin Attached ({post.latitude}, {post.longitude})</small>
                   )}
                 </div>
                 <div className="post-buttons">

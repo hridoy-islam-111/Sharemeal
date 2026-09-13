@@ -63,9 +63,13 @@ const createFoodPost = async ({
 
 const getAllFoodPosts = async () => {
   const query = `
-    SELECT *
-    FROM food_posts
-    ORDER BY id DESC;
+    SELECT 
+      f.*,
+      u.name AS donor_name,
+      u.phone AS donor_phone
+    FROM food_posts f
+    LEFT JOIN users u ON f.donor_id = u.id
+    ORDER BY f.id DESC;
   `;
   const result = await db.query(query);
   return result.rows;
@@ -73,9 +77,13 @@ const getAllFoodPosts = async () => {
 
 const getFoodPostById = async (id) => {
   const query = `
-    SELECT *
-    FROM food_posts
-    WHERE id = $1;
+    SELECT 
+      f.*,
+      u.name AS donor_name,
+      u.phone AS donor_phone
+    FROM food_posts f
+    LEFT JOIN users u ON f.donor_id = u.id
+    WHERE f.id = $1;
   `;
   const result = await db.query(query, [id]);
   return result.rows[0];
