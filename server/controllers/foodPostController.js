@@ -1,5 +1,26 @@
 const foodPostModel = require('../models/foodPostModel');
 
+// Find available food within a radius in meters using the PostGIS-backed model query.
+const getNearbyFoodPosts = async (req, res) => {
+  try {
+    const latitude = Number(req.query.latitude);
+    const longitude = Number(req.query.longitude);
+    const radiusMeters = Number(req.query.radius || 5000);
+
+    if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90 ||
+        !Number.isFinite(longitude) || longitude < -180 || longitude > 180 ||
+        !Number.isFinite(radiusMeters) || radiusMeters <= 0) {
+      return res.status(400).json({ message: 'Valid latitude, longitude, and positive radius are required' });
+    }
+
+    const foodPosts = await foodPostModel.getNearbyFoodPosts(latitude, longitude, radiusMeters);
+    res.status(200).json({ message: 'Nearby food posts retrieved successfully', foodPosts });
+  } catch (error) {
+    console.error('Get nearby food posts error:', error);
+    res.status(500).json({ message: 'Nearby search requires the PostGIS migration to be applied' });
+  }
+};
+
 // Creating food post
 const createFoodPost = async (req, res) => {
   try {
@@ -185,6 +206,7 @@ const deleteFoodPost = async (req, res) => {
 
 module.exports = {
   createFoodPost,
+  getNearbyFoodPosts,
   getAllFoodPosts,
   getFoodPostById,
   updateFoodPost,

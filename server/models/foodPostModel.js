@@ -75,6 +75,32 @@ const getAllFoodPosts = async () => {
   return result.rows;
 };
 
+const getNearbyFoodPosts = async (latitude, longitude, radiusMeters) => {
+  const query = `
+    SELECT
+      f.*,
+      u.name AS donor_name,
+      u.phone AS donor_phone,
+      ST_Distance(
+        ST_SetSRID(ST_MakePoint(f.longitude::double precision, f.latitude::double precision), 4326)::geography,
+        ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography
+      ) AS distance_meters
+    FROM food_posts f
+    LEFT JOIN users u ON f.donor_id = u.id
+    WHERE f.status = 'available'
+      AND f.latitude IS NOT NULL
+      AND f.longitude IS NOT NULL
+      AND ST_DWithin(
+        ST_SetSRID(ST_MakePoint(f.longitude::double precision, f.latitude::double precision), 4326)::geography,
+        ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography,
+        $3
+      )
+    ORDER BY distance_meters ASC;
+  `;
+  const result = await db.query(query, [latitude, longitude, radiusMeters]);
+  return result.rows;
+};
+
 const getFoodPostById = async (id) => {
   const query = `
     SELECT 
@@ -156,6 +182,7 @@ const deleteFoodPost = async (id) => {
 module.exports = {
   createFoodPost,
   getAllFoodPosts,
+  getNearbyFoodPosts,
   getFoodPostById,
   updateFoodPost,
   deleteFoodPost

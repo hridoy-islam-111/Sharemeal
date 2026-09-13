@@ -1,8 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
-dotenv.config();
+// Load the server environment even when the app is started from the workspace root.
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Middleware Imports
 const { apiLimiter } = require('./middleware/rateLimiter');
@@ -19,8 +21,6 @@ const reportRoutes = require('./routes/reportRoutes');
 const servingLogRoutes = require('./routes/servingLogRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-
-const path = require('path');
 
 const app = express();
 

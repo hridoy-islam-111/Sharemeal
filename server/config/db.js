@@ -1,9 +1,13 @@
 const { Pool } = require('pg');
 
-// Database pool configuration connecting to PostgreSQL / Supabase
+// Trim only whitespace outside the URL so a pasted value cannot alter the username.
+const databaseUrl = process.env.DATABASE_URL?.trim();
+const isSupabase = databaseUrl?.includes('supabase.co');
+
+// Database pool configuration connecting to local PostgreSQL or Supabase.
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  connectionString: databaseUrl,
+  ssl: isSupabase ? { rejectUnauthorized: false } : false
 });
 
 pool.on('connect', () => {

@@ -17,6 +17,8 @@ export const AdminUsers = () => {
   const [adminNewPassword, setAdminNewPassword] = useState('');
   const [passwordResetStatus, setPasswordResetStatus] = useState('');
   const [passwordResetLoading, setPasswordResetLoading] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportStatus, setReportStatus] = useState('');
 
   const fetchUsers = async () => {
     try {
@@ -84,6 +86,31 @@ export const AdminUsers = () => {
       setPasswordResetStatus(`❌ ${err.message}`);
     } finally {
       setPasswordResetLoading(false);
+    }
+  };
+
+  const handleReportUser = async (e) => {
+    e.preventDefault();
+    if (!selectedUser || !reportReason.trim()) return;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/reports`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          reported_user_id: selectedUser.id,
+          reason: reportReason.trim()
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Report submission failed');
+      setReportStatus(`✅ Report submitted for ${selectedUser.name}.`);
+      setReportReason('');
+    } catch (err) {
+      setReportStatus(`❌ ${err.message}`);
     }
   };
 
@@ -419,6 +446,36 @@ export const AdminUsers = () => {
               </div>
             </div>
 
+            {/* User Reporting Panel */}
+            <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '14px', padding: '16px', marginBottom: '16px' }}>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: '#9a3412', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                🚩 Report This User
+              </div>
+
+              {reportStatus && (
+                <div style={{ fontSize: '12px', padding: '8px', borderRadius: '8px', background: '#ffffff', border: '1px solid #fdba74', marginBottom: '10px' }}>
+                  {reportStatus}
+                </div>
+              )}
+
+              <form onSubmit={handleReportUser} style={{ display: 'grid', gap: '10px' }}>
+                <textarea
+                  rows={3}
+                  placeholder="State the reason for reporting this user..."
+                  value={reportReason}
+                  onChange={(e) => setReportReason(e.target.value)}
+                  required
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #fdba74', fontSize: '13px', background: '#ffffff', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+                />
+                <button
+                  type="submit"
+                  style={{ background: '#ea580c', color: '#ffffff', border: 0, borderRadius: '8px', padding: '8px 14px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', justifySelf: 'flex-end' }}
+                >
+                  Submit Report
+                </button>
+              </form>
+            </div>
+
             {/* Super Admin Password Change Form */}
             <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '14px', padding: '16px' }}>
               <div style={{ fontSize: '13px', fontWeight: 700, color: '#9a3412', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -454,7 +511,7 @@ export const AdminUsers = () => {
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
               <button
                 type="button"
-                onClick={() => setSelectedUser(null)}
+                onClick={() => { setSelectedUser(null); setReportReason(''); setReportStatus(''); }}
                 style={{ background: '#f3f4f6', color: '#374151', border: 0, borderRadius: '10px', padding: '10px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
               >
                 Close Pop-up
