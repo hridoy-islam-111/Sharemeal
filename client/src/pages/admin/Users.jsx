@@ -88,16 +88,17 @@ export const AdminUsers = () => {
   };
 
   const filteredUsers = users.filter((u) => {
+    const isUserRole = u.role === 'donor' || u.role === 'receiver';
     const matchesSearch =
       (u.name || '').toLowerCase().includes(search.toLowerCase()) ||
       (u.email || '').toLowerCase().includes(search.toLowerCase()) ||
       (u.phone || '').includes(search);
-    const matchesRole = roleFilter === 'all' || (u.role || '').toLowerCase() === roleFilter.toLowerCase();
-    return matchesSearch && matchesRole;
+    const matchesRole = roleFilter === 'all' ? isUserRole : (u.role || '').toLowerCase() === roleFilter.toLowerCase();
+    return isUserRole && matchesSearch && matchesRole;
   });
 
   return (
-    <AdminLayout title="Users & Staff">
+    <AdminLayout title="Users">
       <div style={{ maxWidth: '1060px', margin: '0 auto' }}>
 
         {statusMsg && (
@@ -150,11 +151,9 @@ export const AdminUsers = () => {
                 fontFamily: "'Plus Jakarta Sans', sans-serif"
               }}
             >
-              <option value="all">All</option>
+              <option value="all">All Users</option>
               <option value="donor">Donor</option>
               <option value="receiver">Receiver</option>
-              <option value="ngo">NGO Partner</option>
-              <option value="admin">Super Admin</option>
             </select>
           </div>
         </div>

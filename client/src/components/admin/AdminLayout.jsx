@@ -94,7 +94,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
 
   const navItems = [
     { label: 'Home', path: '/admin/dashboard', IconComponent: Icons.Home },
-    { label: 'Users & Staff', path: '/admin/users', IconComponent: Icons.Users },
+    { label: 'Users', path: '/admin/users', IconComponent: Icons.Users },
     { label: 'NGO Panel', path: '/admin/ngo-queue', IconComponent: Icons.Ngo },
     { label: 'Reports', path: '/admin/reports', IconComponent: Icons.Reports },
     { label: 'Analytics', path: '/admin/analytics', IconComponent: Icons.Analytics },
