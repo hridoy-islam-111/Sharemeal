@@ -1,8 +1,8 @@
-const fs = require("fs");
-const path = require("path");
-const multer = require("multer");
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
 
-const uploadDirectory = path.join(__dirname, "..", "uploads");
+const uploadDirectory = path.join(__dirname, '..', 'uploads');
 fs.mkdirSync(uploadDirectory, { recursive: true });
 
 const storage = multer.diskStorage({
@@ -15,11 +15,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, callback) => {
-    const supportedTypes = ["image/jpeg", "image/png", "image/webp"];
+    const supportedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!supportedTypes.includes(file.mimetype)) {
-      return callback(new Error("Only JPG, PNG, and WEBP images are allowed."));
+      return callback(new Error('Only JPG, PNG, and WEBP images are allowed.'));
     }
     callback(null, true);
   },

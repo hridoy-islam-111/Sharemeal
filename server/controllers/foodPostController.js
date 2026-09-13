@@ -1,60 +1,174 @@
 const foodPostModel = require('../models/foodPostModel');
 
-/**
- * FoodPost Controller handles posting, viewing, updating, and deleting food donations
- */
-
-const createFoodPost = async (req, res, next) => {
+// Creating food post
+const createFoodPost = async (req, res) => {
   try {
-    // TODO: implement logic
-    return res.status(201).json({ message: 'Food post created (scaffold)' });
+    const {
+      donor_id,
+      food_type,
+      quantity,
+      expiry_time,
+      latitude,
+      longitude,
+      status = 'available'
+    } = req.body;
+
+    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+
+    if (
+      !donor_id ||
+      !food_type ||
+      !quantity ||
+      !expiry_time ||
+      latitude === undefined ||
+      longitude === undefined
+    ) {
+      return res.status(400).json({
+        message: 'All required fields must be provided'
+      });
+    }
+
+    const foodPost = await foodPostModel.createFoodPost(
+      donor_id,
+      food_type,
+      quantity,
+      expiry_time,
+      latitude,
+      longitude,
+      image_url,
+      status
+    );
+
+    res.status(201).json({
+      message: 'Food post created successfully',
+      foodPost
+    });
   } catch (error) {
-    next(error);
+    console.error('Create food post error:', error);
+
+    if (error.code === '23503') {
+      return res.status(400).json({ message: 'The donor ID does not exist in the users table' });
+    }
+
+    res.status(500).json({
+      message: 'Failed to create food post'
+    });
   }
 };
 
-const getAllFoodPosts = async (req, res, next) => {
+// Getting all food posts
+const getAllFoodPosts = async (req, res) => {
   try {
-    // TODO: implement logic
-    return res.status(200).json({ message: 'List of food posts (scaffold)', data: [] });
+    const foodPosts = await foodPostModel.getAllFoodPosts();
+
+    res.status(200).json({
+      message: 'Food posts retrieved successfully',
+      foodPosts
+    });
   } catch (error) {
-    next(error);
+    console.error('Get food posts error:', error);
+
+    res.status(500).json({
+      message: 'Failed to retrieve food posts'
+    });
   }
 };
 
-const getFoodPostById = async (req, res, next) => {
+// Getting food post by id
+const getFoodPostById = async (req, res) => {
   try {
-    // TODO: implement logic
-    return res.status(200).json({ message: 'Food post details (scaffold)' });
+    const { id } = req.params;
+
+    const foodPost = await foodPostModel.getFoodPostById(id);
+
+    if (!foodPost) {
+      return res.status(404).json({
+        message: 'Food post not found'
+      });
+    }
+
+    res.status(200).json({
+      message: 'Food post retrieved successfully',
+      foodPost
+    });
   } catch (error) {
-    next(error);
+    console.error('Get food post error:', error);
+
+    res.status(500).json({
+      message: 'Failed to retrieve food post'
+    });
   }
 };
 
-const getMyDonations = async (req, res, next) => {
+// Updating food post
+const updateFoodPost = async (req, res) => {
   try {
-    // TODO: implement logic
-    return res.status(200).json({ message: 'Donor food posts (scaffold)', data: [] });
+    const { id } = req.params;
+    const { food_type, quantity, expiry_time, latitude, longitude, status } = req.body;
+    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+
+    if (
+      !food_type ||
+      !quantity ||
+      !expiry_time ||
+      latitude === undefined ||
+      longitude === undefined
+    ) {
+      return res.status(400).json({
+        message: 'All required fields must be provided'
+      });
+    }
+
+    const foodPost = await foodPostModel.updateFoodPost(
+      id,
+      food_type,
+      quantity,
+      expiry_time,
+      latitude,
+      longitude,
+      image_url,
+      status
+    );
+
+    if (!foodPost) {
+      return res.status(404).json({
+        message: 'Food post not found'
+      });
+    }
+
+    res.status(200).json({
+      message: 'Food post updated successfully',
+      foodPost
+    });
   } catch (error) {
-    next(error);
+    console.error('Update food post error:', error);
+    res.status(500).json({
+      message: 'Failed to update food post'
+    });
   }
 };
 
-const updateFoodPost = async (req, res, next) => {
+// Deleting food post
+const deleteFoodPost = async (req, res) => {
   try {
-    // TODO: implement logic
-    return res.status(200).json({ message: 'Food post updated (scaffold)' });
-  } catch (error) {
-    next(error);
-  }
-};
+    const { id } = req.params;
+    const foodPost = await foodPostModel.deleteFoodPost(id);
 
-const deleteFoodPost = async (req, res, next) => {
-  try {
-    // TODO: implement logic
-    return res.status(200).json({ message: 'Food post deleted (scaffold)' });
+    if (!foodPost) {
+      return res.status(404).json({
+        message: 'Food post not found'
+      });
+    }
+
+    res.status(200).json({
+      message: 'Food post deleted successfully',
+      foodPost
+    });
   } catch (error) {
-    next(error);
+    console.error('Delete food post error:', error);
+    res.status(500).json({
+      message: 'Failed to delete food post'
+    });
   }
 };
 
@@ -62,7 +176,6 @@ module.exports = {
   createFoodPost,
   getAllFoodPosts,
   getFoodPostById,
-  getMyDonations,
   updateFoodPost,
   deleteFoodPost
 };

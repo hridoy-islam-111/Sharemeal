@@ -2,26 +2,24 @@ import api from './api';
 
 export const authService = {
   login: async (credentials) => {
-    // TODO: implement API call
     const response = await api.post('/auth/login', credentials);
     return response.data;
   },
 
-  register: async (userData) => {
-    // TODO: implement API call
-    const response = await api.post('/auth/register', userData);
+  register: async (formData) => {
+    // If formData is FormData instance, send multipart header
+    const headers = formData instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {};
+    const response = await api.post('/auth/signup', formData, { headers });
     return response.data;
   },
 
   getMe: async () => {
-    // TODO: implement API call
     const response = await api.get('/auth/me');
     return response.data;
   },
 
-  updateProfile: async (profileData) => {
-    // TODO: implement API call
-    const response = await api.put('/auth/profile', profileData);
+  verifyUser: async (id) => {
+    const response = await api.patch(`/auth/verify/${id}`);
     return response.data;
   }
 };

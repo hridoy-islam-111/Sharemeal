@@ -19,7 +19,7 @@ const apiLimiter = rateLimit({
  */
 const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // Limit each IP to 10 auth requests per hour
+  max: 20, // Limit each IP to 20 auth requests per hour
   message: {
     status: 429,
     message: 'Too many authentication attempts from this IP, please try again later.'
@@ -28,5 +28,7 @@ const authLimiter = rateLimit({
 
 module.exports = {
   apiLimiter,
-  authLimiter
+  authLimiter,
+  signupLimiter: authLimiter,
+  loginLimiter: authLimiter
 };

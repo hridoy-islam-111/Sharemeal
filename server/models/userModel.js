@@ -4,35 +4,65 @@ const db = require('../config/db');
  * User Model - database operations for users table
  */
 
-const createUser = async (userData) => {
-  // TODO: implement query
+const createUser = async ({ name, phone, nid, nid_pdf, email, address, password_hash, role }) => {
+  const query = `
+    INSERT INTO users (name, phone, nid, nid_pdf, email, address, password_hash, role)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    RETURNING id, name, phone, nid, email, address, role, verification_status, created_at;
+  `;
+  const values = [name, phone, nid, nid_pdf || null, email || null, address || null, password_hash, role];
+  const result = await db.query(query, values);
+  return result.rows[0];
 };
 
 const findById = async (id) => {
-  // TODO: implement query
+  const query = `
+    SELECT id, name, phone, nid, email, address, role, verification_status, created_at
+    FROM users
+    WHERE id = $1;
+  `;
+  const result = await db.query(query, [id]);
+  return result.rows[0];
+};
+
+const findByPhone = async (phone) => {
+  const query = `SELECT * FROM users WHERE phone = $1;`;
+  const result = await db.query(query, [phone]);
+  return result.rows[0];
 };
 
 const findByEmail = async (email) => {
-  // TODO: implement query
+  const query = `SELECT * FROM users WHERE email = $1;`;
+  const result = await db.query(query, [email]);
+  return result.rows[0];
 };
 
 const findByRole = async (role) => {
-  // TODO: implement query
+  const query = `
+    SELECT id, name, phone, nid, email, address, role, verification_status, created_at
+    FROM users
+    WHERE role = $1;
+  `;
+  const result = await db.query(query, [role]);
+  return result.rows;
 };
 
-const updateUser = async (id, updateData) => {
-  // TODO: implement query
-};
-
-const deleteUser = async (id) => {
-  // TODO: implement query
+const updateVerificationStatus = async (id, status) => {
+  const query = `
+    UPDATE users
+    SET verification_status = $1
+    WHERE id = $2
+    RETURNING id, name, phone, role, verification_status;
+  `;
+  const result = await db.query(query, [status, id]);
+  return result.rows[0];
 };
 
 module.exports = {
   createUser,
   findById,
+  findByPhone,
   findByEmail,
   findByRole,
-  updateUser,
-  deleteUser
+  updateVerificationStatus
 };

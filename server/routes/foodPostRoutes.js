@@ -1,16 +1,20 @@
 const express = require('express');
-const router = express.Router();
-const foodPostController = require('../controllers/foodPostController');
-const { protect, requireRole } = require('../middleware/authMiddleware');
-const { validateFoodPost } = require('../validators/foodPostValidator');
-const upload = require('../middleware/uploadMiddleware');
+const upload = require('../middleware/upload');
 
-// Food post routes
-router.get('/', foodPostController.getAllFoodPosts);
-router.get('/my-donations', protect, requireRole('donor'), foodPostController.getMyDonations);
-router.get('/:id', foodPostController.getFoodPostById);
-router.post('/', protect, requireRole('donor'), upload.array('images', 5), validateFoodPost, foodPostController.createFoodPost);
-router.put('/:id', protect, requireRole('donor'), foodPostController.updateFoodPost);
-router.delete('/:id', protect, requireRole('donor', 'admin'), foodPostController.deleteFoodPost);
+const {
+  createFoodPost,
+  getAllFoodPosts,
+  getFoodPostById,
+  updateFoodPost,
+  deleteFoodPost
+} = require('../controllers/foodPostController');
+
+const router = express.Router();
+
+router.post('/', upload.single('image'), createFoodPost);
+router.get('/', getAllFoodPosts);
+router.get('/:id', getFoodPostById);
+router.put('/:id', upload.single('image'), updateFoodPost);
+router.delete('/:id', deleteFoodPost);
 
 module.exports = router;

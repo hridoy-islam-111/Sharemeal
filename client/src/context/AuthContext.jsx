@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }) => {
     const fetchCurrentUser = async () => {
       if (token) {
         try {
-          // TODO: implement fetch profile call
           const userData = await authService.getMe();
           setUser(userData.user || null);
         } catch (error) {
@@ -27,7 +26,6 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (credentials) => {
-    // TODO: implement login logic
     const data = await authService.login(credentials);
     if (data.token) {
       setToken(data.token);
@@ -37,9 +35,14 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const register = async (userData) => {
-    // TODO: implement register logic
-    return await authService.register(userData);
+  const register = async (formData) => {
+    const data = await authService.register(formData);
+    if (data.token) {
+      setToken(data.token);
+      localStorage.setItem('sharemeal_token', data.token);
+      setUser(data.user || null);
+    }
+    return data;
   };
 
   const logout = () => {

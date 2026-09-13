@@ -1,33 +1,53 @@
-/**
- * Auth Input Validators
- */
+const { body, validationResult } = require('express-validator');
 
-const validateRegister = (req, res, next) => {
-  const { email, password, name, role } = req.body;
-  
-  if (!email || !password || !name || !role) {
-    return res.status(400).json({ message: 'Email, password, name, and role are required.' });
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
   }
-
-  const validRoles = ['donor', 'ngo', 'receiver', 'admin'];
-  if (!validRoles.includes(role)) {
-    return res.status(400).json({ message: `Role must be one of: ${validRoles.join(', ')}` });
-  }
-
   next();
 };
 
-const validateLogin = (req, res, next) => {
-  const { email, password } = req.body;
+const signupValidation = [
+  body('name')
+    .customSanitizer((v) => (typeof v === 'string' ? v.trim() : v))
+    .notEmpty()
+    .withMessage('Name is required'),
+  body('nid')
+    .customSanitizer((v) => (typeof v === 'string' ? v.trim() : v))
+    .notEmpty()
+    .withMessage('NID is required'),
+  body('phone')
+    .customSanitizer((v) => (typeof v === 'string' ? v.trim() : v))
+    .notEmpty()
+    .withMessage('Phone number is required'),
+  body('password')
+    .customSanitizer((v) => (typeof v === 'string' ? v.trim() : v))
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters'),
+  body('role')
+    .customSanitizer((v) => (typeof v === 'string' ? v.trim().toLowerCase() : v))
+    .isIn(['donor', 'receiver', 'ngo', 'admin'])
+    .withMessage('Role must be one of: donor, receiver, ngo, admin'),
+  validate,
+];
 
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required.' });
-  }
-
-  next();
-};
+const loginValidation = [
+  body('phone')
+    .optional()
+    .customSanitizer((v) => (typeof v === 'string' ? v.trim() : v)),
+  body('email')
+    .optional()
+    .customSanitizer((v) => (typeof v === 'string' ? v.trim() : v)),
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required'),
+  validate,
+];
 
 module.exports = {
-  validateRegister,
-  validateLogin
+  signupValidation,
+  validateRegister: signupValidation,
+  loginValidation,
+  validateLogin: loginValidation,
 };

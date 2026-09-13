@@ -4,27 +4,25 @@ import { useNavigate, Link } from 'react-router-dom';
 import AuthHeroPanel from '../../components/auth/AuthHeroPanel';
 import LoginForm from '../../components/auth/LoginForm';
 
-export const Login = () => {
+export const NgoLogin = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLoginSubmit = async (credentials) => {
+  const handleNgoLoginSubmit = async (credentials) => {
     setError('');
     setLoading(true);
 
     try {
       const data = await login(credentials);
-      const role = data.user?.role || 'donor';
-
-      if (role === 'donor') navigate('/donor/post-food');
-      else if (role === 'ngo') navigate('/ngo/dashboard');
-      else if (role === 'receiver') navigate('/receiver/dashboard');
-      else if (role === 'admin') navigate('/admin/dashboard');
-      else navigate('/');
+      if (data.user?.role === 'ngo' || data.user?.role === 'admin') {
+        navigate('/ngo/dashboard');
+      } else {
+        setError('This portal is restricted to authorized NGO partners.');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Login failed');
+      setError(err.response?.data?.message || err.message || 'NGO login failed');
     } finally {
       setLoading(false);
     }
@@ -32,10 +30,14 @@ export const Login = () => {
 
   return (
     <div className="auth-split-container">
-      {/* Reusable Left Hero Panel */}
+      {/* Reusable Left Hero Panel with NGO branding */}
       <AuthHeroPanel
-        title="Welcome back!"
-        subtitle="Your community is waiting. Log back in to rescue food and feed people."
+        brandName="ShareMeal NGO Partner"
+        title="NGO Distribution Portal"
+        subtitle="Private management portal for managing incoming food claims & distribution logs."
+        bgGradient="linear-gradient(147.83deg, #059669 7.73%, #047857 58.45%, #064e3b 92.26%)"
+        badgeText="Verified Partner Portal"
+        iconEmoji="📦"
       />
 
       {/* Right Form Panel */}
@@ -45,9 +47,9 @@ export const Login = () => {
         </Link>
 
         <LoginForm
-          title="Log in"
-          subtitle="Good to see you again."
-          onSubmit={handleLoginSubmit}
+          title="NGO Partner Sign In"
+          subtitle="Access your organization dashboard & active food claims."
+          onSubmit={handleNgoLoginSubmit}
           loading={loading}
           error={error}
         />
@@ -56,4 +58,4 @@ export const Login = () => {
   );
 };
 
-export default Login;
+export default NgoLogin;
