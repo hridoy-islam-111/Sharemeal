@@ -67,6 +67,8 @@ export const AdminLogin = () => {
     }
   };
 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setOtpErr('');
@@ -82,12 +84,10 @@ export const AdminLogin = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to reset password');
 
-      setOtpMsg('Password successfully reset! You can now log in with your new password.');
-      setTimeout(() => {
-        setShowForgotModal(false);
-        setOtpStep(1);
-        setPassword(newPassword);
-      }, 2000);
+      setShowForgotModal(false);
+      setShowSuccessModal(true);
+      setOtpStep(1);
+      setPassword(newPassword);
     } catch (err) {
       setOtpErr(err.message || 'Error resetting password');
     } finally {
@@ -227,6 +227,28 @@ export const AdminLogin = () => {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Password Changed Success Popup Modal */}
+      {showSuccessModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 3000 }}>
+          <div style={{ width: '100%', maxWidth: '420px', background: '#241c19', borderRadius: '24px', padding: '32px 28px', textAlign: 'center', boxShadow: '0 25px 60px rgba(0,0,0,0.5)', border: '1px solid #3d312a', color: '#fff' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(16,185,129,0.2)', color: '#10b981', fontSize: 32, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', border: '1px solid rgba(16,185,129,0.4)', boxShadow: '0 8px 20px rgba(16,185,129,0.2)' }}>
+              ✓
+            </div>
+            <h3 style={{ margin: '0 0 8px', fontSize: '20px', fontWeight: 800, color: '#ffffff' }}>Password Changed!</h3>
+            <p style={{ margin: '0 0 24px', fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: '20px' }}>
+              Your Super Admin password has been updated successfully. You can now log into your account using your new password.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowSuccessModal(false)}
+              style={{ width: '100%', background: '#10b981', color: '#ffffff', border: 0, borderRadius: '12px', padding: '12px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
+            >
+              Great, Log In Now →
+            </button>
           </div>
         </div>
       )}
