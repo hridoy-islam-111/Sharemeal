@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { API_BASE_URL } from '../../utils/constants';
 import '../../App.css';
 
 // Figma Vector SVG Icons
@@ -87,9 +88,34 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Profile modal & settings states
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [otpSentMsg, setOtpSentMsg] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+
   const handleLogout = () => {
     logout();
     navigate('/admin/login');
+  };
+
+  const handleForgotPasswordClick = async () => {
+    setOtpLoading(true);
+    setOtpSentMsg('');
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'hridoy.islam.webflow@gmail.com' })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to send OTP');
+      setOtpSentMsg('✅ 6-digit OTP reset code sent to hridoy.islam.webflow@gmail.com!');
+    } catch (err) {
+      setOtpSentMsg(`❌ ${err.message}`);
+    } finally {
+      setOtpLoading(false);
+    }
   };
 
   const navItems = [
@@ -103,7 +129,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
   ];
 
   const getInitials = (name) => {
-    if (!name) return 'AS';
+    if (!name) return 'HI';
     const parts = name.split(' ');
     if (parts.length >= 2) {
       return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
@@ -113,7 +139,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f7f2ef', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      {/* Figma 256px Sidebar */}
+      {/* Figma 256px Sidebar anchored to bottom */}
       <aside
         style={{
           width: '256px',
@@ -121,20 +147,24 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
           borderRight: '1px solid rgba(44, 35, 32, 0.06)',
           display: 'flex',
           flexDirection: 'column',
-          justify: 'space-between',
+          justifyContent: 'space-between',
           flexShrink: 0,
-          boxShadow: '1px 0px 0px rgba(44,35,32,0.06)'
+          boxShadow: '1px 0px 0px rgba(44,35,32,0.06)',
+          height: '100vh',
+          position: 'sticky',
+          top: 0
         }}
       >
         <div>
-          {/* Figma Brand Header */}
+          {/* Centered Brand Navbar Logo Header */}
           <div
             style={{
-              padding: '20px',
+              height: '60px',
+              padding: '0 20px',
               borderBottom: '1px solid rgba(44,35,32,0.05)',
               display: 'flex',
               alignItems: 'center',
-              gap: 10
+              gap: 12
             }}
           >
             <div
@@ -147,12 +177,13 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
                 alignItems: 'center',
                 justify: 'center',
                 color: '#fff',
-                boxShadow: '0px 6px 7px rgba(255,107,74,0.6)'
+                boxShadow: '0px 6px 7px rgba(255,107,74,0.6)',
+                flexShrink: 0
               }}
             >
               <Icons.Brand />
             </div>
-            <span style={{ fontSize: 18, fontWeight: 700, color: '#2c2320', fontFamily: "'Fraunces', serif" }}>
+            <span style={{ fontSize: 18, fontWeight: 700, color: '#2c2320', fontFamily: "'Fraunces', serif", lineHeight: 1 }}>
               ShareMeal
             </span>
           </div>
@@ -197,39 +228,49 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
           </nav>
         </div>
 
-        {/* Bottom Profile Footer */}
-        <div style={{ padding: '16px 12px', borderTop: '1px solid rgba(44,35,32,0.05)' }}>
+        {/* Bottom Profile Footer Anchored to Bottom */}
+        <div style={{ padding: '16px 12px', borderTop: '1px solid rgba(44,35,32,0.05)', marginTop: 'auto' }}>
+          {/* Interactive Hridoy Islam Profile Box */}
           <div
+            onClick={() => setShowProfileModal(true)}
             style={{
               padding: '10px 12px',
               borderRadius: '12px',
               display: 'flex',
               alignItems: 'center',
               gap: 12,
-              marginBottom: 4
+              marginBottom: 4,
+              cursor: 'pointer',
+              transition: 'background 0.2s'
             }}
+            onMouseOver={(e) => (e.currentTarget.style.background = '#fcf8f6')}
+            onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+            title="Click to view email, forget password, and notification settings"
           >
+            {/* Centered HI Initial Avatar */}
             <div
               style={{
-                width: 32,
-                height: 32,
+                width: 36,
+                height: 36,
                 borderRadius: '50%',
                 background: '#ffe4db',
                 color: '#c8391b',
                 fontWeight: 700,
-                fontSize: 12,
+                fontSize: 13,
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'center'
+                justify: 'center',
+                flexShrink: 0
               }}
             >
-              {getInitials(user?.name)}
+              {getInitials(user?.name || 'Hridoy Islam')}
             </div>
-            <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#2c2320', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                {user?.name ? user.name.replace(/\s*\(Super Admin\)/i, '') : 'Admin Superuser'}
+
+            <div style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#2c2320', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', lineHeight: '18px' }}>
+                {user?.name ? user.name.replace(/\s*\(Super Admin\)/i, '') : 'Hridoy Islam'}
               </div>
-              <div style={{ fontSize: 12, color: '#6b5d56' }}>Admin</div>
+              <div style={{ fontSize: 12, color: '#6b5d56', lineHeight: '16px' }}>Admin</div>
             </div>
           </div>
 
@@ -262,19 +303,19 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
         </div>
       </aside>
 
-      {/* Main Container */}
+      {/* Main Content Area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Figma Top Header Bar */}
         <header
           style={{
             width: '100%',
-            height: '56px',
+            height: '60px',
             background: '#ffffff',
             borderBottom: '1px solid rgba(44,35,32,0.05)',
-            padding: '12px 24px',
+            padding: '0 24px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justify: 'space-between',
             flexShrink: 0,
             boxSizing: 'border-box'
           }}
@@ -286,6 +327,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 'auto' }}>
             {/* Notifications Button */}
             <div
+              onClick={() => setNotificationsEnabled(!notificationsEnabled)}
               style={{
                 position: 'relative',
                 width: 40,
@@ -297,31 +339,35 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
                 justify: 'center',
                 cursor: 'pointer'
               }}
+              title={`Notifications ${notificationsEnabled ? 'Enabled' : 'Disabled'}`}
             >
               <Icons.Bell />
-              <div
-                style={{
-                  position: 'absolute',
-                  top: -2,
-                  left: 26,
-                  background: '#ff6b4a',
-                  color: '#fff',
-                  fontSize: 9,
-                  fontWeight: 700,
-                  width: 16,
-                  height: 16,
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justify: 'center'
-                }}
-              >
-                7
-              </div>
+              {notificationsEnabled && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: -2,
+                    left: 26,
+                    background: '#ff6b4a',
+                    color: '#fff',
+                    fontSize: 9,
+                    fontWeight: 700,
+                    width: 16,
+                    height: 16,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justify: 'center'
+                  }}
+                >
+                  7
+                </div>
+              )}
             </div>
 
             {/* Profile Avatar Circle */}
             <div
+              onClick={() => setShowProfileModal(true)}
               style={{
                 width: 36,
                 height: 36,
@@ -332,10 +378,11 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
                 fontSize: 12,
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'center'
+                justify: 'center',
+                cursor: 'pointer'
               }}
             >
-              {getInitials(user?.name)}
+              {getInitials(user?.name || 'Hridoy Islam')}
             </div>
           </div>
         </header>
@@ -345,6 +392,102 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
           {children}
         </main>
       </div>
+
+      {/* Pop-up Modal when clicking on Hridoy Islam Profile */}
+      {showProfileModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 2000 }}>
+          <div style={{ width: '100%', maxWidth: '460px', background: '#ffffff', borderRadius: '20px', padding: '24px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320' }}>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #eee5e0', paddingBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#ffe4db', color: '#c8391b', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  HI
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#2c2320' }}>Hridoy Islam</h3>
+                  <span style={{ fontSize: '12px', color: '#6b5d56' }}>Super Admin</span>
+                </div>
+              </div>
+              <button onClick={() => setShowProfileModal(false)} style={{ background: 'transparent', border: 0, fontSize: '20px', cursor: 'pointer', color: '#888' }}>✕</button>
+            </div>
+
+            {/* Email Field */}
+            <div style={{ background: '#fcf8f6', padding: '14px 16px', borderRadius: '12px', border: '1px solid #eee5e0', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '13px', color: '#6b5d56', fontWeight: 600 }}>📧 Gmail Account:</span>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: '#2c2320' }}>hridoy.islam.webflow@gmail.com</span>
+            </div>
+
+            {/* Notification On / Off Switch */}
+            <div style={{ background: '#fcf8f6', padding: '14px 16px', borderRadius: '12px', border: '1px solid #eee5e0', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '13px', color: '#6b5d56', fontWeight: 600 }}>🔔 Admin Notifications:</span>
+              <button
+                type="button"
+                onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+                style={{
+                  background: notificationsEnabled ? '#10b981' : '#d1d5db',
+                  color: '#ffffff',
+                  border: 0,
+                  borderRadius: '100px',
+                  padding: '6px 14px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'background 0.2s'
+                }}
+              >
+                {notificationsEnabled ? '✓ Enabled (On)' : '✕ Muted (Off)'}
+              </button>
+            </div>
+
+            {/* Forget Password Form */}
+            <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px' }}>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: '#9a3412', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                🔑 Password Recovery
+              </div>
+              <p style={{ fontSize: '12px', color: '#7c2d12', margin: '0 0 10px' }}>
+                Send a 6-digit OTP code to your super admin email address to reset password.
+              </p>
+
+              {otpSentMsg && (
+                <div style={{ fontSize: '12px', padding: '8px', borderRadius: '8px', background: '#ffffff', border: '1px solid #fdba74', marginBottom: '10px' }}>
+                  {otpSentMsg}
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={handleForgotPasswordClick}
+                disabled={otpLoading}
+                style={{
+                  width: '100%',
+                  background: '#ea580c',
+                  color: '#ffffff',
+                  border: 0,
+                  borderRadius: '8px',
+                  padding: '9px 14px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                {otpLoading ? 'Sending OTP Code...' : '🔑 Send Forget Password OTP Email'}
+              </button>
+            </div>
+
+            {/* Close Button */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setShowProfileModal(false)}
+                style={{ background: '#f3f4f6', color: '#374151', border: 0, borderRadius: '10px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Close Settings
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 };
