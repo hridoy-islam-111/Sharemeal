@@ -226,11 +226,22 @@ const resetPassword = async (req, res, next) => {
     }
 
     const password_hash = await bcrypt.hash(newPassword, 10);
-    await db.query('UPDATE users SET password_hash = $1, plain_password = $2 WHERE email = $3', [password_hash, newPassword, email]);
+    const result = await db.query(
+      'UPDATE users SET password_hash = $1, plain_password = $2 WHERE LOWER(email) = LOWER($3) RETURNING id, email',
+      [password_hash, newPassword, email]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'User account not found with this email address.' });
+    }
+
+    console.log(`\n==========================================`);
+    console.log(`✅ DATABASE UPDATED! New Password set for ${email}`);
+    console.log(`==========================================\n`);
 
     otpStore.delete(email.toLowerCase());
 
-    res.status(200).json({ message: 'Password reset successful! You can now log in.' });
+    res.status(200).json({ message: 'Password reset successful! You can now log in with your new password.' });
   } catch (error) {
     next(error);
   }
