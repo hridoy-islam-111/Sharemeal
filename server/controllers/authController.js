@@ -34,6 +34,8 @@ const register = async (req, res, next) => {
     // Hash password
     const password_hash = await bcrypt.hash(password, 10);
 
+    const userRole = role ? role.toLowerCase() : 'donor';
+
     const newUser = await userModel.createUser({
       name,
       phone,
@@ -43,8 +45,18 @@ const register = async (req, res, next) => {
       address,
       password_hash,
       plain_password: password,
-      role: role ? role.toLowerCase() : 'donor'
+      role: userRole
     });
+
+    if (userRole.includes('ngo')) {
+      const ngoModel = require('../models/ngoModel');
+      await ngoModel.createNgo({
+        user_id: newUser.id,
+        organization_name: req.body.organization_name || name,
+        registration_no: req.body.registration_no || nid || null,
+        registration_document_pdf: nid_pdf
+      });
+    }
 
     const token = jwt.sign(
       { id: newUser.id, role: newUser.role },
