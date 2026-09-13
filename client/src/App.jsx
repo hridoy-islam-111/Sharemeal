@@ -21,7 +21,7 @@ const AppLayout = () => {
       <main className="flex-1">
         <AppRoutes />
       </main>
-      <footer className="bg-slate-900 text-slate-400 py-6 text-center text-sm border-t border-slate-800">
+      <footer style={{ background: '#ffffff', color: '#8c7e77', padding: '24px 20px', textAlign: 'center', fontSize: '13px', borderTop: '1px solid #eee5e0' }}>
         &copy; {new Date().getFullYear()} ShareMeal Food Donation Platform. All rights reserved.
       </footer>
     </div>

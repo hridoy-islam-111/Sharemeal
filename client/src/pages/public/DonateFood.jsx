@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Navbar } from '../../components/common/Navbar';
 
 export const DonateFood = () => {
   const { user, loading } = useAuth();
@@ -31,8 +30,7 @@ export const DonateFood = () => {
 
   // If NOT registered / logged in: Ask for signup as a donor
   return (
-    <div style={{ minHeight: '100vh', background: '#fff9f5', color: '#2c2320', fontFamily: "'Plus Jakarta Sans', sans-serif", display: 'flex', flexDirection: 'column' }}>
-      <Navbar />
+    <div style={{ minHeight: '100%', background: '#fff9f5', color: '#2c2320', fontFamily: "'Plus Jakarta Sans', sans-serif", display: 'flex', flexDirection: 'column' }}>
 
       <main style={{ flex: 1, padding: '40px 24px 80px', position: 'relative', overflow: 'hidden' }}>
         {/* Ambient Glows */}
@@ -162,10 +160,6 @@ export const DonateFood = () => {
         </div>
       </main>
 
-      {/* Mini Footer */}
-      <footer style={{ borderTop: '1px solid #eee5e0', padding: '24px', textAlign: 'center', fontSize: '13px', color: '#8c7e77', background: '#ffffff' }}>
-        © 2026 ShareMeal. Connecting surplus with plates across Bangladesh.
-      </footer>
     </div>
   );
 };
