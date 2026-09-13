@@ -227,7 +227,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
             </div>
             <div style={{ overflow: 'hidden' }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#2c2320', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                {user?.name || 'Admin Superuser'}
+                {user?.name ? user.name.replace(/\s*\(Super Admin\)/i, '') : 'Admin Superuser'}
               </div>
               <div style={{ fontSize: 12, color: '#6b5d56' }}>Admin</div>
             </div>
@@ -267,13 +267,14 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
         {/* Figma Top Header Bar */}
         <header
           style={{
+            width: '100%',
             height: '56px',
             background: '#ffffff',
             borderBottom: '1px solid rgba(44,35,32,0.05)',
             padding: '12px 24px',
             display: 'flex',
             alignItems: 'center',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             flexShrink: 0,
             boxSizing: 'border-box'
           }}
@@ -282,7 +283,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
             {title}
           </h2>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 'auto' }}>
             {/* Notifications Button */}
             <div
               style={{

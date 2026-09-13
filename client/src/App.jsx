@@ -7,8 +7,9 @@ import AppRoutes from './routes/AppRoutes';
 const AppLayout = () => {
   const location = useLocation();
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/ngo/login' || location.pathname === '/ngo-portal';
+  const isAdminPage = location.pathname.startsWith('/admin') || location.pathname.startsWith('/super-admin');
 
-  if (isAuthPage) {
+  if (isAuthPage || isAdminPage) {
     return <AppRoutes />;
   }
 
