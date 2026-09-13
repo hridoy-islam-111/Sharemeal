@@ -14,10 +14,6 @@ export const Home = () => {
   const [emailInput, setEmailInput] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
-  // Volunteer Modal state
-  const [selectedDrive, setSelectedDrive] = useState(null);
-  const [volunteerSuccess, setVolunteerSuccess] = useState('');
-
   // Anonymous Mode interactive demo toggle in dark card
   const [demoAnonymous, setDemoAnonymous] = useState(true);
 
@@ -41,39 +37,6 @@ export const Home = () => {
     }
   ];
 
-  // NGO Drives Data from Figma
-  const drives = [
-    {
-      id: 1,
-      ngo: 'Robin Hood Army',
-      title: 'Weekend Slum Meal Drive',
-      date: 'Aug 15',
-      day: 'Sat',
-      time: '6:00 PM',
-      volunteers: '12 volunteers needed',
-      color: '#ff6b4a'
-    },
-    {
-      id: 2,
-      ngo: 'Feeding India',
-      title: 'Ration Kit Distribution',
-      date: 'Aug 16',
-      day: 'Sun',
-      time: '9:30 AM',
-      volunteers: '8 volunteers needed',
-      color: '#10b981'
-    },
-    {
-      id: 3,
-      ngo: 'No Food Waste',
-      title: 'Late-Night Community Kitchen',
-      date: 'Aug 19',
-      day: 'Wed',
-      time: '10:00 PM',
-      volunteers: '20 volunteers needed',
-      color: '#f59e0b'
-    }
-  ];
 
   // Trending Posts Data from Figma
   const trendingPosts = [
@@ -190,13 +153,6 @@ export const Home = () => {
     }
   };
 
-  const handleVolunteerSubmit = () => {
-    setVolunteerSuccess(`Thank you! You have signed up to volunteer with ${selectedDrive.ngo} for "${selectedDrive.title}".`);
-    setTimeout(() => {
-      setSelectedDrive(null);
-      setVolunteerSuccess('');
-    }, 2400);
-  };
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff9f5', color: '#2c2320', fontFamily: "'Plus Jakarta Sans', sans-serif", overflowX: 'hidden' }}>
@@ -874,92 +830,6 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* ========================================================
-          8. UPCOMING NGO DRIVES (From Figma Node 8:22956)
-      ======================================================== */}
-      <section style={{ padding: '0 24px 90px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f04b28', fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: '8px' }}>
-                <span style={{ width: '24px', height: '2px', background: '#f04b28' }}></span> GET INVOLVED
-              </div>
-              <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(30px, 4vw, 40px)', fontWeight: 800, color: '#2c2320', margin: 0 }}>
-                Upcoming NGO drives
-              </h2>
-            </div>
-            <span style={{ color: '#f04b28', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}>
-              See the calendar →
-            </span>
-          </div>
-
-          {/* 3 Drives Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-            {drives.map((drive) => (
-              <div
-                key={drive.id}
-                className="drive-card"
-                style={{
-                  background: '#ffffff',
-                  border: '1px solid rgba(44, 35, 32, 0.07)',
-                  borderRadius: '20px',
-                  padding: '24px',
-                  boxShadow: '0 8px 24px rgba(44, 35, 32, 0.04)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer'
-                }}
-              >
-                <div>
-                  {/* Date & Time Header */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff0ec', padding: '6px 14px', borderRadius: '12px', border: '1px solid #ffdecb' }}>
-                      <span style={{ fontSize: '14px', fontWeight: 800, color: '#d9381e' }}>{drive.date}</span>
-                      <span style={{ fontSize: '12px', color: '#888' }}>({drive.day})</span>
-                    </div>
-                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#6b5d56' }}>
-                      ⏰ {drive.time}
-                    </span>
-                  </div>
-
-                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#ff6b4a', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
-                    {drive.ngo}
-                  </div>
-
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#2c2320', margin: '0 0 10px' }}>
-                    {drive.title}
-                  </h3>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#6b5d56', marginBottom: '20px' }}>
-                    <span>👥</span> {drive.volunteers}
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setSelectedDrive(drive)}
-                  className="drive-btn"
-                  style={{
-                    width: '100%',
-                    background: '#2c2320',
-                    color: '#ffffff',
-                    border: 0,
-                    padding: '12px',
-                    borderRadius: '12px',
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Volunteer for this drive →
-                </button>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
 
       {/* ========================================================
           9. IMPACT BANNER (From Figma Node 8:23045)
@@ -1387,48 +1257,6 @@ export const Home = () => {
         </div>
       </footer>
 
-      {/* Volunteer Signup Modal */}
-      {selectedDrive && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 3000 }}>
-          <div style={{ width: '100%', maxWidth: '440px', background: '#ffffff', borderRadius: '24px', padding: '28px', color: '#2c2320', boxShadow: '0 20px 50px rgba(0,0,0,0.3)' }}>
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, fontFamily: "'Fraunces', serif" }}>
-                Volunteer for Drive
-              </h3>
-              <button onClick={() => setSelectedDrive(null)} style={{ background: 'transparent', border: 0, fontSize: '20px', cursor: 'pointer', color: '#888' }}>✕</button>
-            </div>
-
-            {volunteerSuccess ? (
-              <div style={{ background: '#dcfce7', color: '#15803d', padding: '16px', borderRadius: '12px', fontSize: '13px', fontWeight: 700, textAlign: 'center' }}>
-                🎉 {volunteerSuccess}
-              </div>
-            ) : (
-              <div>
-                <div style={{ background: '#faf5f2', padding: '14px', borderRadius: '14px', marginBottom: '16px', fontSize: '13px' }}>
-                  <div style={{ fontWeight: 800, color: '#ff6b4a', marginBottom: '4px' }}>{selectedDrive.ngo}</div>
-                  <div style={{ fontWeight: 700, fontSize: '15px', color: '#2c2320', marginBottom: '4px' }}>{selectedDrive.title}</div>
-                  <div style={{ color: '#6b5d56' }}>📅 {selectedDrive.date} ({selectedDrive.day}) at {selectedDrive.time}</div>
-                </div>
-
-                <p style={{ fontSize: '13px', color: '#6b5d56', marginBottom: '20px' }}>
-                  Your contact details will be shared with {selectedDrive.ngo} for pickup/serving coordination.
-                </p>
-
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                  <button onClick={() => setSelectedDrive(null)} style={{ background: '#f3f4f6', color: '#374151', border: 0, padding: '10px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
-                    Cancel
-                  </button>
-                  <button onClick={handleVolunteerSubmit} style={{ background: '#ff6b4a', color: '#ffffff', border: 0, padding: '10px 20px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}>
-                    Confirm Sign-up →
-                  </button>
-                </div>
-              </div>
-            )}
-
-          </div>
-        </div>
-      )}
 
     </div>
   );
