@@ -5,8 +5,18 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('sharemeal_token') || null);
+  const getInitialToken = () => {
+    return sessionStorage.getItem('sharemeal_token') || localStorage.getItem('sharemeal_token') || null;
+  };
+
+  const [token, setToken] = useState(getInitialToken());
   const [loading, setLoading] = useState(true);
+
+  const saveToken = (newToken) => {
+    setToken(newToken);
+    sessionStorage.setItem('sharemeal_token', newToken);
+    localStorage.setItem('sharemeal_token', newToken);
+  };
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -28,8 +38,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     const data = await authService.login(credentials);
     if (data.token) {
-      setToken(data.token);
-      localStorage.setItem('sharemeal_token', data.token);
+      saveToken(data.token);
       setUser(data.user || null);
     }
     return data;
@@ -38,8 +47,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (formData) => {
     const data = await authService.register(formData);
     if (data.token) {
-      setToken(data.token);
-      localStorage.setItem('sharemeal_token', data.token);
+      saveToken(data.token);
       setUser(data.user || null);
     }
     return data;
@@ -48,8 +56,7 @@ export const AuthProvider = ({ children }) => {
   const googleLogin = async (idToken, role) => {
     const data = await authService.googleLogin(idToken, role);
     if (data.token) {
-      setToken(data.token);
-      localStorage.setItem('sharemeal_token', data.token);
+      saveToken(data.token);
       setUser(data.user || null);
     }
     return data;
@@ -58,6 +65,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
+    sessionStorage.removeItem('sharemeal_token');
     localStorage.removeItem('sharemeal_token');
   };
 

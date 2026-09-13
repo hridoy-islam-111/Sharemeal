@@ -12,7 +12,7 @@ const api = axios.create({
 // Request Interceptor to attach Authorization JWT token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('sharemeal_token');
+    const token = sessionStorage.getItem('sharemeal_token') || localStorage.getItem('sharemeal_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -26,7 +26,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // TODO: Handle unauthorized token expiration redirect if needed
+      sessionStorage.removeItem('sharemeal_token');
       localStorage.removeItem('sharemeal_token');
     }
     return Promise.reject(error);
