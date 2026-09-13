@@ -5,6 +5,7 @@ import { GoogleLogin } from '@react-oauth/google';
 export const LoginForm = ({ onSubmit, onGoogleSuccess, loading, error, title = "Log in", subtitle = "Good to see you again." }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -60,15 +61,34 @@ export const LoginForm = ({ onSubmit, onGoogleSuccess, loading, error, title = "
 
         <div className="auth-input-group">
           <label>Password <span className="required">*</span></label>
-          <div className="auth-input-wrapper">
+          <div className="auth-input-wrapper" style={{ position: 'relative' }}>
             <span className="auth-input-icon">🔒</span>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              style={{ paddingRight: '40px' }}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'transparent',
+                border: 0,
+                fontSize: '16px',
+                cursor: 'pointer',
+                opacity: 0.8
+              }}
+              title={showPassword ? "Hide Password" : "Show Password"}
+            >
+              {showPassword ? '👁️' : '🙈'}
+            </button>
           </div>
         </div>
 

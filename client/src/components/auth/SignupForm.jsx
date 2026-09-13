@@ -154,7 +154,7 @@ export const SignupForm = ({ role, onSubmit, onGoogleSuccess, loading, error }) 
 
         <div className="auth-input-group">
           <label>Password <span className="required">*</span></label>
-          <div className="auth-input-wrapper">
+          <div className="auth-input-wrapper" style={{ position: 'relative' }}>
             <span className="auth-input-icon">🔒</span>
             <input
               type={showPassword ? 'text' : 'password'}
@@ -162,13 +162,25 @@ export const SignupForm = ({ role, onSubmit, onGoogleSuccess, loading, error }) 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              style={{ paddingRight: '40px' }}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              style={{ border: 0, background: 'transparent', paddingRight: 12, cursor: 'pointer', fontSize: 14 }}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'transparent',
+                border: 0,
+                fontSize: '16px',
+                cursor: 'pointer',
+                opacity: 0.8
+              }}
+              title={showPassword ? "Hide Password" : "Show Password"}
             >
-              {showPassword ? '🙈' : '👁️'}
+              {showPassword ? '👁️' : '🙈'}
             </button>
           </div>
         </div>
