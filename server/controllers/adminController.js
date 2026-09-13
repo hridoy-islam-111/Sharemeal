@@ -25,7 +25,7 @@ const getDashboardStats = async (req, res, next) => {
 const getAllUsers = async (req, res, next) => {
   try {
     const result = await db.query(
-      'SELECT id, name, phone, email, address, nid, role, plain_password, verification_status, created_at FROM users ORDER BY id DESC'
+      'SELECT id, name, phone, email, address, nid, (nid_pdf IS NOT NULL) AS has_nid_pdf, role, plain_password, verification_status, created_at FROM users ORDER BY id DESC'
     );
     return res.status(200).json({ message: 'All users retrieved', users: result.rows });
   } catch (error) {
@@ -36,9 +36,24 @@ const getAllUsers = async (req, res, next) => {
 const getNgoVerificationQueue = async (req, res, next) => {
   try {
     const result = await db.query(
-      "SELECT id, name, phone, email, address, nid, role, plain_password, verification_status, created_at FROM users WHERE verification_status = 'pending' ORDER BY id DESC"
+      "SELECT id, name, phone, email, address, nid, (nid_pdf IS NOT NULL) AS has_nid_pdf, role, plain_password, verification_status, created_at FROM users WHERE verification_status = 'pending' ORDER BY id DESC"
     );
     return res.status(200).json({ message: 'Verification queue retrieved', users: result.rows });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getNidDocument = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const result = await db.query('SELECT nid_pdf, name FROM users WHERE id = $1', [userId]);
+    if (result.rows.length === 0 || !result.rows[0].nid_pdf) {
+      return res.status(404).send('NID Document file not uploaded or found');
+    }
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="nid-user-${userId}.pdf"`);
+    res.send(result.rows[0].nid_pdf);
   } catch (error) {
     next(error);
   }
@@ -95,6 +110,7 @@ module.exports = {
   getDashboardStats,
   getAllUsers,
   getNgoVerificationQueue,
+  getNidDocument,
   verifyNgo,
   resetUserPasswordByAdmin,
   getBotAlerts

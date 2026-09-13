@@ -5,7 +5,7 @@ import { API_BASE_URL } from '../../utils/constants';
 import '../../App.css';
 
 export const Profile = () => {
-  const { user, token } = useAuth();
+  const { user, token, updateUser } = useAuth();
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [phone, setPhone] = useState(user?.phone || '');
@@ -28,6 +28,18 @@ export const Profile = () => {
   }, [user]);
 
   const isVerified = user?.verification_status === 'verified';
+
+  const calculateCompletion = () => {
+    let score = 0;
+    if (name.trim()) score += 20;
+    if (phone.trim()) score += 20;
+    if (email.trim()) score += 20;
+    if (address.trim()) score += 20;
+    if (nid.trim() || nidPdf) score += 20;
+    return score;
+  };
+
+  const completionPercentage = calculateCompletion();
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -57,7 +69,15 @@ export const Profile = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Failed to update profile');
 
-      setStatus('Profile updated successfully! Your verification details are under review.');
+      if (data.user) {
+        updateUser(data.user);
+      }
+
+      if (completionPercentage === 100 && !isVerified) {
+        setStatus('🎉 Profile 100% Complete! Your details are saved and waiting for Admin approval.');
+      } else {
+        setStatus('Profile updated successfully!');
+      }
     } catch (err) {
       setError(err.message || 'Error updating profile');
     } finally {
@@ -103,9 +123,9 @@ export const Profile = () => {
 
             <div
               style={{
-                background: isVerified ? '#ecfdf5' : '#fff7ed',
-                border: isVerified ? '1px solid #a7f3d0' : '1px solid #fed7aa',
-                color: isVerified ? '#047857' : '#c2410c',
+                background: isVerified ? '#ecfdf5' : completionPercentage === 100 ? '#eff6ff' : '#fff7ed',
+                border: isVerified ? '1px solid #a7f3d0' : completionPercentage === 100 ? '1px solid #bfdbfe' : '1px solid #fed7aa',
+                color: isVerified ? '#047857' : completionPercentage === 100 ? '#1d4ed8' : '#c2410c',
                 padding: '8px 16px',
                 borderRadius: '100px',
                 fontSize: '13px',
@@ -115,7 +135,37 @@ export const Profile = () => {
                 gap: 6
               }}
             >
-              {isVerified ? '✅ Verified Donor' : '⏳ Pending NID Verification'}
+              {isVerified
+                ? '✅ Verified Donor'
+                : completionPercentage === 100
+                ? '⏳ 100% Complete — Waiting for Admin Approval'
+                : '⏳ Pending NID Verification'}
+            </div>
+          </div>
+
+          {/* Profile Completion Progress Bar */}
+          <div style={{ marginTop: '20px', background: '#fcf8f6', padding: '14px 18px', borderRadius: '12px', border: '1px solid #f4ece8' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: '#2c2320' }}>
+                📊 Profile Completion: {completionPercentage}%
+              </span>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: completionPercentage === 100 ? '#059669' : '#ea580c' }}>
+                {completionPercentage === 100
+                  ? isVerified ? '✓ Verified Account' : '⏳ Waiting for Admin Approval'
+                  : `${100 - completionPercentage}% Remaining`}
+              </span>
+            </div>
+
+            <div style={{ width: '100%', height: '8px', background: '#e5e7eb', borderRadius: '100px', overflow: 'hidden' }}>
+              <div
+                style={{
+                  width: `${completionPercentage}%`,
+                  height: '100%',
+                  background: completionPercentage === 100 ? 'linear-gradient(90deg, #10b981, #059669)' : 'linear-gradient(90deg, #ff6b4a, #ea580c)',
+                  borderRadius: '100px',
+                  transition: 'width 0.4s ease'
+                }}
+              />
             </div>
           </div>
         </div>

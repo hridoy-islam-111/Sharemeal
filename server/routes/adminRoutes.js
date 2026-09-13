@@ -9,6 +9,7 @@ router.use(protect, requireRole('admin'));
 router.get('/stats', adminController.getDashboardStats);
 router.get('/users', adminController.getAllUsers);
 router.get('/ngo-queue', adminController.getNgoVerificationQueue);
+router.get('/nid-document/:userId', adminController.getNidDocument);
 router.patch('/ngo-verify/:id', adminController.verifyNgo);
 router.patch('/reset-password/:id', adminController.resetUserPasswordByAdmin);
 router.get('/bot-alerts', adminController.getBotAlerts);
