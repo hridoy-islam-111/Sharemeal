@@ -173,11 +173,13 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
   const [profileNewPassword, setProfileNewPassword] = useState('');
   const [profileOtpMsg, setProfileOtpMsg] = useState('');
   const [profileOtpErr, setProfileOtpErr] = useState('');
+  const [profilePreviewUrl, setProfilePreviewUrl] = useState(null);
 
   const handleForgotPasswordClick = async () => {
     setOtpLoading(true);
     setProfileOtpMsg('');
     setProfileOtpErr('');
+    setProfilePreviewUrl(null);
     try {
       const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
         method: 'POST',
@@ -188,6 +190,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
       if (!res.ok) throw new Error(data.message || 'Failed to send OTP');
       setProfileOtpCode('');
       setProfileOtpMsg(`✉️ 6-digit OTP code sent to hridoy.islam.webflow@gmail.com. Please check your email inbox and enter the code below.`);
+      if (data.previewUrl) setProfilePreviewUrl(data.previewUrl);
       setProfileOtpStep(2);
     } catch (err) {
       setProfileOtpErr(`❌ ${err.message}`);
@@ -688,7 +691,18 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
                 🔑 Password Recovery via OTP
               </div>
 
-              {profileOtpMsg && <div style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: 10, borderRadius: 8, fontSize: 12, marginBottom: 10, fontWeight: 600 }}>{profileOtpMsg}</div>}
+              {profileOtpMsg && (
+                <div style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: 10, borderRadius: 8, fontSize: 12, marginBottom: 10, fontWeight: 600 }}>
+                  {profileOtpMsg}
+                  {profilePreviewUrl && (
+                    <div style={{ marginTop: 6 }}>
+                      <a href={profilePreviewUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#ea580c', textDecoration: 'underline', fontWeight: 700 }}>
+                        📩 Click here to open sent email preview (Simulated Inbox) →
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
               {profileOtpErr && <div style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', padding: 10, borderRadius: 8, fontSize: 12, marginBottom: 10, fontWeight: 600 }}>{profileOtpErr}</div>}
 
               {profileOtpStep === 1 ? (
