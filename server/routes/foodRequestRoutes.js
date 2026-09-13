@@ -1,12 +1,41 @@
 const express = require('express');
 const router = express.Router();
 const foodRequestController = require('../controllers/foodRequestController');
-const { protect, requireRole } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-// Food request routes (Receiver <-> NGO)
-router.post('/', protect, requireRole('receiver'), foodRequestController.createFoodRequest);
-router.get('/my-requests', protect, requireRole('receiver'), foodRequestController.getMyFoodRequests);
-router.get('/incoming', protect, requireRole('ngo'), foodRequestController.getIncomingFoodRequests);
-router.patch('/:id/status', protect, requireRole('ngo'), foodRequestController.updateFoodRequestStatus);
+// Ensure uploads/receipts directory exists
+const receiptsDir = path.join(__dirname, '../uploads/receipts');
+if (!fs.existsSync(receiptsDir)) {
+  fs.mkdirSync(receiptsDir, { recursive: true });
+}
+
+// Multer Storage config for proof of receipt images
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, receiptsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname) || '.jpg';
+    cb(null, `receipt-${req.params.id || 'photo'}-${uniqueSuffix}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
+// Food request routes
+router.post('/', protect, foodRequestController.createFoodRequest);
+router.get('/my-requests', protect, foodRequestController.getMyFoodRequests);
+router.get('/incoming', protect, foodRequestController.getIncomingFoodRequests);
+router.patch('/:id/status', protect, foodRequestController.updateFoodRequestStatus);
+router.post('/verify-code', protect, foodRequestController.verifyPickupCode);
+router.post('/:id/receipt', protect, upload.single('receipt_photo'), foodRequestController.uploadReceiptPhoto);
 
 module.exports = router;
+

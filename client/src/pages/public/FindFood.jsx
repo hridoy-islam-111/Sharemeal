@@ -3,6 +3,8 @@ import { API_BASE_URL } from '../../utils/constants';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
+import { useAuth } from '../../context/AuthContext';
+import MyRequestsModal from '../../components/receiver/MyRequestsModal';
 
 // Fix Leaflet default marker icons in React Vite
 delete L.Icon.Default.prototype._getIconUrl;
@@ -26,6 +28,8 @@ const createFoodMarkerIcon = (type) => {
 };
 
 export const FindFood = () => {
+
+  const { user, token } = useAuth();
   const [foodPosts, setFoodPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,6 +37,63 @@ export const FindFood = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('All');
   const [viewMode, setViewMode] = useState('map'); // 'map' or 'grid'
   const [selectedPost, setSelectedPost] = useState(null);
+
+  // Request Food State
+  const [requestModalPost, setRequestModalPost] = useState(null);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [requestedQuantity, setRequestedQuantity] = useState(1);
+  const [requestNotes, setRequestNotes] = useState('');
+  const [submittingRequest, setSubmittingRequest] = useState(false);
+  const [requestError, setRequestError] = useState('');
+  const [submittedRequest, setSubmittedRequest] = useState(null);
+  const [showMyRequests, setShowMyRequests] = useState(false);
+
+  const handleOpenRequestModal = (post) => {
+    setRequestModalPost(post);
+    setIsAnonymous(false);
+    setRequestedQuantity(1);
+    setRequestNotes('');
+    setRequestError('');
+  };
+
+  const handleCreateFoodRequest = async (e) => {
+    e.preventDefault();
+    if (!token) {
+      alert('Please log in as a Receiver or NGO to request food.');
+      return;
+    }
+    setSubmittingRequest(true);
+    setRequestError('');
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/food-requests`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          food_post_id: requestModalPost.id,
+          is_anonymous: isAnonymous,
+          requested_quantity: requestedQuantity,
+          notes: requestNotes
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.data) {
+        setSubmittedRequest(data.data);
+        setRequestModalPost(null);
+      } else {
+        setRequestError(data.message || 'Failed to submit food request');
+      }
+    } catch (err) {
+      console.error('Request error:', err);
+      setRequestError('Network error submitting request');
+    } finally {
+      setSubmittingRequest(false);
+    }
+  };
+
 
   useEffect(() => {
     fetchFoodPosts();
@@ -90,40 +151,62 @@ export const FindFood = () => {
             </p>
           </div>
 
-          <div style={{ display: 'flex', background: '#ffffff', border: '1px solid rgba(44,35,32,0.1)', borderRadius: '12px', padding: '4px' }}>
-            <button
-              onClick={() => setViewMode('map')}
-              style={{
-                padding: '8px 16px',
-                borderRadius: '8px',
-                border: 0,
-                background: viewMode === 'map' ? '#ff6b4a' : 'transparent',
-                color: viewMode === 'map' ? '#ffffff' : '#2c2320',
-                fontWeight: 700,
-                fontSize: '13px',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-            >
-              🗺️ Visual Map View
-            </button>
-            <button
-              onClick={() => setViewMode('grid')}
-              style={{
-                padding: '8px 16px',
-                borderRadius: '8px',
-                border: 0,
-                background: viewMode === 'grid' ? '#ff6b4a' : 'transparent',
-                color: viewMode === 'grid' ? '#ffffff' : '#2c2320',
-                fontWeight: 700,
-                fontSize: '13px',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-            >
-              📋 Grid Cards ({filteredPosts.length})
-            </button>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            {user && (
+              <button
+                onClick={() => setShowMyRequests(true)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '12px',
+                  border: '1px solid #ff6b4a',
+                  background: '#fff0ec',
+                  color: '#d9381e',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(255,107,74,0.15)'
+                }}
+              >
+                📋 My Requests &amp; Pickup Codes
+              </button>
+            )}
+
+            <div style={{ display: 'flex', background: '#ffffff', border: '1px solid rgba(44,35,32,0.1)', borderRadius: '12px', padding: '4px' }}>
+              <button
+                onClick={() => setViewMode('map')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: 0,
+                  background: viewMode === 'map' ? '#ff6b4a' : 'transparent',
+                  color: viewMode === 'map' ? '#ffffff' : '#2c2320',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                🗺️ Visual Map View
+              </button>
+              <button
+                onClick={() => setViewMode('grid')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: 0,
+                  background: viewMode === 'grid' ? '#ff6b4a' : 'transparent',
+                  color: viewMode === 'grid' ? '#ffffff' : '#2c2320',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                📋 Grid Cards ({filteredPosts.length})
+              </button>
+            </div>
           </div>
+
         </div>
 
         {/* Filter Controls Bar */}
@@ -269,19 +352,27 @@ export const FindFood = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => setSelectedPost(post)}
-                    style={{ width: '100%', background: '#2c2320', color: '#ffffff', border: 0, padding: '10px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    View Details &amp; Location →
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                    <button
+                      onClick={() => setSelectedPost(post)}
+                      style={{ flex: 1, background: '#2c2320', color: '#ffffff', border: 0, padding: '10px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      View Details →
+                    </button>
+                    <button
+                      onClick={() => handleOpenRequestModal(post)}
+                      style={{ flex: 1, background: '#ff6b4a', color: '#ffffff', border: 0, padding: '10px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      🍱 Request Food
+                    </button>
+                  </div>
                 </div>
               ))
             )}
           </div>
         )}
 
-        {/* Selected Post Popup Modal */}
+        {/* Selected Post Popup Details Modal */}
         {selectedPost && (
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 3000 }}>
             <div style={{ width: '100%', maxWidth: '520px', background: '#ffffff', borderRadius: '20px', padding: '24px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320', maxHeight: '90vh', overflowY: 'auto' }}>
@@ -307,11 +398,163 @@ export const FindFood = () => {
                 <button onClick={() => setSelectedPost(null)} style={{ background: '#f3f4f6', color: '#374151', border: 0, borderRadius: '8px', padding: '10px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
                   Close
                 </button>
+                <button
+                  onClick={() => {
+                    const target = selectedPost;
+                    setSelectedPost(null);
+                    handleOpenRequestModal(target);
+                  }}
+                  style={{ background: '#ff6b4a', color: '#ffffff', border: 0, borderRadius: '8px', padding: '10px 18px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  🍱 Request This Food
+                </button>
               </div>
 
             </div>
           </div>
         )}
+
+        {/* Modal 1: Request Food Form */}
+        {requestModalPost && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 3200 }}>
+            <div style={{ width: '100%', maxWidth: '480px', background: '#ffffff', borderRadius: '24px', padding: '28px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320' }}>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #eee5e0', paddingBottom: '12px' }}>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, fontFamily: "'Fraunces', serif" }}>
+                  🍱 Request Food Donation
+                </h3>
+                <button onClick={() => setRequestModalPost(null)} style={{ background: 'transparent', border: 0, fontSize: '20px', cursor: 'pointer', color: '#888' }}>✕</button>
+              </div>
+
+              {requestError && (
+                <div style={{ background: '#fde8e8', color: '#991b1b', padding: '10px 14px', borderRadius: '10px', fontSize: '13px', fontWeight: 600, marginBottom: '14px' }}>
+                  ⚠️ {requestError}
+                </div>
+              )}
+
+              <form onSubmit={handleCreateFoodRequest} style={{ display: 'grid', gap: '16px' }}>
+                
+                <div style={{ background: '#faf5f2', padding: '12px', borderRadius: '12px', border: '1px solid #eee5e0', fontSize: '13px' }}>
+                  <div><strong>Post:</strong> {requestModalPost.food_type} ({requestModalPost.quantity} Servings available)</div>
+                  <div><strong>Location:</strong> {requestModalPost.district}, {requestModalPost.thana}</div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, marginBottom: '6px' }}>
+                    Servings Needed:
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max={requestModalPost.quantity || 10}
+                    value={requestedQuantity}
+                    onChange={(e) => setRequestedQuantity(e.target.value)}
+                    required
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: '14px', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, marginBottom: '6px' }}>
+                    Special Notes for Donor (Optional):
+                  </label>
+                  <textarea
+                    rows="2"
+                    placeholder="e.g. Estimated pickup time or family member count..."
+                    value={requestNotes}
+                    onChange={(e) => setRequestNotes(e.target.value)}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e0d8d3', fontSize: '13px', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                {/* Identity Masking Option */}
+                <div style={{ background: '#f3e8ff', border: '1px solid #e9d5ff', padding: '14px', borderRadius: '12px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <input
+                    type="checkbox"
+                    id="isAnonymousToggle"
+                    checked={isAnonymous}
+                    onChange={(e) => setIsAnonymous(e.target.checked)}
+                    style={{ width: '18px', height: '18px', marginTop: '2px', cursor: 'pointer' }}
+                  />
+                  <label htmlFor="isAnonymousToggle" style={{ fontSize: '13px', cursor: 'pointer', color: '#581c87', fontWeight: 600 }}>
+                    🕵️ Request Anonymously (Identity Masking)
+                    <span style={{ display: 'block', fontSize: '11px', fontWeight: 400, color: '#7e22ce', marginTop: '2px' }}>
+                      When checked, your real name &amp; contact info remain encrypted &amp; hidden publicly as "Anonymous Receiver".
+                    </span>
+                  </label>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
+                  <button type="button" onClick={() => setRequestModalPost(null)} style={{ background: '#f3f4f6', color: '#374151', border: 0, borderRadius: '10px', padding: '10px 18px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={submittingRequest} style={{ background: '#ff6b4a', color: '#ffffff', border: 0, borderRadius: '10px', padding: '10px 22px', fontSize: '13px', fontWeight: 800, cursor: 'pointer' }}>
+                    {submittingRequest ? 'Submitting...' : 'Confirm Food Request →'}
+                  </button>
+                </div>
+
+              </form>
+
+            </div>
+          </div>
+        )}
+
+        {/* Modal 2: Pickup Code Confirmation Screen */}
+        {submittedRequest && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 3400 }}>
+            <div style={{ width: '100%', maxWidth: '440px', background: '#ffffff', borderRadius: '24px', padding: '28px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320', textAlign: 'center' }}>
+              
+              <div style={{ fontSize: '48px', marginBottom: '8px' }}>🎉</div>
+              <h3 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: 800, fontFamily: "'Fraunces', serif", color: '#166534' }}>
+                Food Request Submitted!
+              </h3>
+              <p style={{ margin: '0 0 20px', fontSize: '13px', color: '#6b5d56' }}>
+                Save or screenshot your unique 6-digit pickup code below. You must present this code to the donor when collecting food.
+              </p>
+
+              {/* Pickup Code Display Badge */}
+              <div style={{ background: '#fff0ec', border: '3px dashed #ff6b4a', borderRadius: '16px', padding: '20px', marginBottom: '20px' }}>
+                <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: '#6b5d56' }}>
+                  YOUR SECURE PICKUP CODE
+                </div>
+                <div style={{ fontSize: '32px', fontWeight: 900, color: '#d9381e', letterSpacing: '3px', fontFamily: 'monospace', margin: '6px 0' }}>
+                  {submittedRequest.pickup_code}
+                </div>
+                {submittedRequest.is_anonymous && (
+                  <div style={{ fontSize: '11px', color: '#6b21a8', fontWeight: 700, marginTop: '4px' }}>
+                    🕵️ Identity Masked (Anonymous Mode Active)
+                  </div>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                <button
+                  onClick={() => {
+                    setSubmittedRequest(null);
+                    setShowMyRequests(true);
+                  }}
+                  style={{ background: '#2c2320', color: '#ffffff', border: 0, borderRadius: '10px', padding: '12px 20px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  View My Requests &amp; Pickup Codes
+                </button>
+                <button
+                  onClick={() => setSubmittedRequest(null)}
+                  style={{ background: '#ff6b4a', color: '#ffffff', border: 0, borderRadius: '10px', padding: '12px 20px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Done
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* Receiver Requests Drawer / Modal */}
+        <MyRequestsModal
+          isOpen={showMyRequests}
+          onClose={() => setShowMyRequests(false)}
+          token={token}
+        />
 
       </div>
     </div>
@@ -319,3 +562,4 @@ export const FindFood = () => {
 };
 
 export default FindFood;
+
