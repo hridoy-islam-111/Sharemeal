@@ -9,8 +9,9 @@ const AppLayout = () => {
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/ngo/login' || location.pathname === '/ngo-portal';
   const isAdminPage = location.pathname.startsWith('/admin') || location.pathname.startsWith('/super-admin');
   const isDashboardPage = location.pathname.startsWith('/donor') || location.pathname.startsWith('/ngo') || location.pathname.startsWith('/receiver');
+  const isHomePage = location.pathname === '/';
 
-  if (isAuthPage || isAdminPage || isDashboardPage) {
+  if (isAuthPage || isAdminPage || isDashboardPage || isHomePage) {
     return <AppRoutes />;
   }
 
