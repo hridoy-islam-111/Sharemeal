@@ -76,14 +76,14 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { phone, email, password } = req.body;
+    const { phone, email, identifier, password } = req.body;
+    const loginInput = (identifier || phone || email || '').trim();
 
-    let user;
-    if (phone) {
-      user = await userModel.findByPhone(phone);
-    } else if (email) {
-      user = await userModel.findByEmail(email);
+    if (!loginInput || !password) {
+      return res.status(400).json({ message: 'Phone/Email and password are required' });
     }
+
+    const user = await userModel.findByPhoneOrEmail(loginInput);
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid phone/email or password' });

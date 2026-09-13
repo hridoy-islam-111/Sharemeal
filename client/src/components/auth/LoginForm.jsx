@@ -9,7 +9,7 @@ export const LoginForm = ({ onSubmit, onGoogleSuccess, loading, error, title = "
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ phone, password });
+    onSubmit({ phone: phone, email: phone, password });
   };
 
   return (
@@ -46,12 +46,12 @@ export const LoginForm = ({ onSubmit, onGoogleSuccess, loading, error, title = "
 
       <form onSubmit={handleSubmit}>
         <div className="auth-input-group">
-          <label>Phone Number <span className="required">*</span></label>
+          <label>Phone Number or Email Address <span className="required">*</span></label>
           <div className="auth-input-wrapper">
             <span className="auth-input-icon">📞</span>
             <input
               type="text"
-              placeholder="01712345678"
+              placeholder="01712345678 or name@email.com"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required

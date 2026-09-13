@@ -32,8 +32,15 @@ const findByPhone = async (phone) => {
 };
 
 const findByEmail = async (email) => {
-  const query = `SELECT * FROM users WHERE email = $1;`;
+  const query = `SELECT * FROM users WHERE LOWER(email) = LOWER($1);`;
   const result = await db.query(query, [email]);
+  return result.rows[0];
+};
+
+const findByPhoneOrEmail = async (identifier) => {
+  if (!identifier) return null;
+  const query = `SELECT * FROM users WHERE LOWER(email) = LOWER($1) OR phone = $1;`;
+  const result = await db.query(query, [identifier.trim()]);
   return result.rows[0];
 };
 
@@ -81,6 +88,7 @@ module.exports = {
   findById,
   findByPhone,
   findByEmail,
+  findByPhoneOrEmail,
   findByRole,
   updateVerificationStatus,
   updateUserProfile
