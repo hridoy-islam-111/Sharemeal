@@ -21,17 +21,19 @@ export const SignupForm = ({ role, onSubmit, onGoogleSuccess, loading, error }) 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({
-      name,
-      phone,
-      email,
-      address,
-      nid,
-      nidPdf,
-      password,
-      role,
-      agreed
-    });
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('phone', phone);
+    formData.append('email', email);
+    formData.append('address', address);
+    formData.append('nid', nid);
+    if (nidPdf) {
+      formData.append('nidPdf', nidPdf);
+    }
+    formData.append('password', password);
+    formData.append('role', role);
+    formData.append('agreed', agreed);
+    onSubmit(formData);
   };
 
   return (
@@ -148,6 +150,7 @@ export const SignupForm = ({ role, onSubmit, onGoogleSuccess, loading, error }) 
               type="file"
               accept="application/pdf,image/*"
               onChange={(e) => setNidPdf(e.target.files[0] || null)}
+              required
             />
           </div>
         </div>

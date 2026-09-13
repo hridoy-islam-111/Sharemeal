@@ -7,9 +7,8 @@ export const authService = {
   },
 
   register: async (formData) => {
-    // If formData is FormData instance, send multipart header
-    const headers = formData instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {};
-    const response = await api.post('/auth/signup', formData, { headers });
+    // FormData is automatically handled by the axios interceptor
+    const response = await api.post('/auth/signup', formData);
     return response.data;
   },
 
@@ -20,6 +19,12 @@ export const authService = {
 
   getMe: async () => {
     const response = await api.get('/auth/me');
+    return response.data;
+  },
+
+  updateProfile: async (formData) => {
+    // FormData is automatically handled by the axios interceptor
+    const response = await api.put('/auth/profile', formData);
     return response.data;
   },
 

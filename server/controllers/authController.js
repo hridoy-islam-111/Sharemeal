@@ -31,6 +31,12 @@ const register = async (req, res, next) => {
       return res.status(409).json({ message: 'Phone number already registered' });
     }
 
+    // Check if email already registered
+    const existingEmail = await userModel.findByEmail(email);
+    if (existingEmail) {
+      return res.status(409).json({ message: 'Email already registered' });
+    }
+
     // Hash password
     const password_hash = await bcrypt.hash(password, 10);
 
