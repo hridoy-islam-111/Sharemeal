@@ -5,7 +5,7 @@ import { API_BASE_URL } from '../../utils/constants';
 import '../../App.css';
 
 export const AdminLogin = () => {
-  const [email, setEmail] = useState('hridoy.islam.webflow@gmail.com');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ export const AdminLogin = () => {
   // Forgot Password / OTP State
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [otpStep, setOtpStep] = useState(1); // 1 = enter email, 2 = enter OTP & new pass
-  const [recoveryEmail, setRecoveryEmail] = useState('hridoy.islam.webflow@gmail.com');
+  const [recoveryEmail, setRecoveryEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [otpMsg, setOtpMsg] = useState('');
