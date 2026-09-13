@@ -137,10 +137,48 @@ export const DonorLayout = ({ children, title = 'Dashboard' }) => {
     return name.slice(0, 2).toUpperCase();
   };
 
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#fff9f5', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .donor-sidebar {
+            position: fixed !important;
+            left: -256px;
+            transition: left 0.3s ease-in-out;
+            z-index: 2000;
+          }
+          .donor-sidebar.open {
+            left: 0 !important;
+          }
+          .mobile-hamburger-btn {
+            display: flex !important;
+          }
+        }
+        @media (min-width: 769px) {
+          .mobile-hamburger-btn {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      {/* Mobile Backdrop Overlay */}
+      {isMobileOpen && (
+        <div
+          onClick={() => setIsMobileOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 1999
+          }}
+        />
+      )}
+
       {/* Figma 256px Donor Sidebar */}
       <aside
+        className={`donor-sidebar ${isMobileOpen ? 'open' : ''}`}
         style={{
           width: '256px',
           background: '#ffffff',
@@ -198,6 +236,7 @@ export const DonorLayout = ({ children, title = 'Dashboard' }) => {
                 <Link
                   key={item.path}
                   to={item.path}
+                  onClick={() => setIsMobileOpen(false)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -213,6 +252,12 @@ export const DonorLayout = ({ children, title = 'Dashboard' }) => {
                     background: isActive ? '#ff6b4a' : 'transparent',
                     color: isActive ? '#ffffff' : '#6b5d56',
                     boxShadow: isActive ? '0px 8px 9px rgba(255,107,74,0.55)' : 'none'
+                  }}
+                  onMouseOver={(e) => {
+                    if (!isActive) e.currentTarget.style.background = '#f7f2ef';
+                  }}
+                  onMouseOut={(e) => {
+                    if (!isActive) e.currentTarget.style.background = 'transparent';
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -312,15 +357,32 @@ export const DonorLayout = ({ children, title = 'Dashboard' }) => {
             padding: '0 24px',
             display: 'flex',
             alignItems: 'center',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             flexShrink: 0,
             boxSizing: 'border-box',
             position: 'relative'
           }}
         >
-          <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: '#2c2320', fontFamily: "'Fraunces', serif" }}>
-            {title}
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button
+              type="button"
+              onClick={() => setIsMobileOpen(!isMobileOpen)}
+              className="mobile-hamburger-btn"
+              style={{
+                background: 'transparent',
+                border: 0,
+                fontSize: '22px',
+                color: '#2c2320',
+                cursor: 'pointer',
+                padding: 0
+              }}
+            >
+              {isMobileOpen ? '✕' : '☰'}
+            </button>
+            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: '#2c2320', fontFamily: "'Fraunces', serif" }}>
+              {title}
+            </h2>
+          </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 'auto', position: 'relative' }}>
             {/* Notification Bell Button */}
@@ -363,26 +425,6 @@ export const DonorLayout = ({ children, title = 'Dashboard' }) => {
                   {unreadCount}
                 </div>
               )}
-            </div>
-
-            {/* Avatar Circle */}
-            <div
-              onClick={() => navigate('/donor/profile')}
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: '50%',
-                background: '#ffe4db',
-                color: '#c8391b',
-                fontWeight: 700,
-                fontSize: 12,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer'
-              }}
-            >
-              {getInitials(user?.name || 'Abdur Rahman')}
             </div>
 
             {/* Notification Dropdown Panel */}

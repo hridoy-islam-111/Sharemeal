@@ -248,10 +248,48 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
     return name.slice(0, 2).toUpperCase();
   };
 
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f7f2ef', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      {/* Figma 256px Sidebar anchored to bottom */}
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#fff9f5', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .admin-sidebar {
+            position: fixed !important;
+            left: -256px;
+            transition: left 0.3s ease-in-out;
+            z-index: 2000;
+          }
+          .admin-sidebar.open {
+            left: 0 !important;
+          }
+          .admin-mobile-hamburger {
+            display: flex !important;
+          }
+        }
+        @media (min-width: 769px) {
+          .admin-mobile-hamburger {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      {/* Mobile Backdrop Overlay */}
+      {isMobileOpen && (
+        <div
+          onClick={() => setIsMobileOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 1999
+          }}
+        />
+      )}
+
+      {/* Figma 256px Sidebar */}
       <aside
+        className={`admin-sidebar ${isMobileOpen ? 'open' : ''}`}
         style={{
           width: '256px',
           background: '#ffffff',
@@ -426,15 +464,32 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
             padding: '0 24px',
             display: 'flex',
             alignItems: 'center',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             flexShrink: 0,
             boxSizing: 'border-box',
             position: 'relative'
           }}
         >
-          <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: '#2c2320', fontFamily: "'Fraunces', serif" }}>
-            {title}
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button
+              type="button"
+              onClick={() => setIsMobileOpen(!isMobileOpen)}
+              className="admin-mobile-hamburger"
+              style={{
+                background: 'transparent',
+                border: 0,
+                fontSize: '22px',
+                color: '#2c2320',
+                cursor: 'pointer',
+                padding: 0
+              }}
+            >
+              {isMobileOpen ? '✕' : '☰'}
+            </button>
+            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: '#2c2320', fontFamily: "'Fraunces', serif" }}>
+              {title}
+            </h2>
+          </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 'auto', position: 'relative' }}>
             {/* Notifications Button */}
@@ -586,7 +641,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
                       fontWeight: 700,
                       display: 'flex',
                       alignItems: 'center',
-                      justify: 'center',
+                      justifyContent: 'center',
                       flexShrink: 0,
                       zIndex: 1,
                       boxShadow: '0 2px 6px rgba(16,185,129,0.4)'

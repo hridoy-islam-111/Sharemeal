@@ -18,7 +18,7 @@ export const VerificationBanner = () => {
         padding: '10px 24px',
         display: 'flex',
         alignItems: 'center',
-        justify: 'space-between',
+        justifyContent: 'space-between',
         color: '#9a3412',
         fontSize: '13px',
         fontWeight: 500,

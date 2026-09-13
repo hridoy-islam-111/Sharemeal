@@ -102,7 +102,9 @@ export const Profile = () => {
                   fontWeight: 800,
                   display: 'flex',
                   alignItems: 'center',
-                  justify: 'center'
+                  justifyContent: 'center',
+                  lineHeight: 1,
+                  textAlign: 'center'
                 }}
               >
                 {name ? name.substring(0, 2).toUpperCase() : 'PS'}

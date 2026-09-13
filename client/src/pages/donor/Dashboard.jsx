@@ -52,7 +52,7 @@ export const DonorDashboard = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              justify: 'space-between',
+              justifyContent: 'space-between',
               flexWrap: 'wrap',
               gap: 16,
               position: 'relative',
@@ -253,7 +253,7 @@ export const DonorDashboard = () => {
                 borderBottom: '1px solid #f3ece8',
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'space-between'
+                justifyContent: 'space-between'
               }}
             >
               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#2c2320' }}>
@@ -283,7 +283,7 @@ export const DonorDashboard = () => {
                       borderBottom: '1px solid #f8f3f0',
                       display: 'flex',
                       alignItems: 'center',
-                      justify: 'space-between',
+                      justifyContent: 'space-between',
                       flexWrap: 'wrap',
                       gap: 12
                     }}
