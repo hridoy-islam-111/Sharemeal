@@ -7,7 +7,7 @@ import LoginForm from '../../components/auth/LoginForm';
 export const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleLoginSubmit = async (credentials) => {
@@ -25,6 +25,26 @@ export const Login = () => {
       else navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (idToken) => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const data = await googleLogin(idToken, 'donor');
+      const role = data.user?.role || 'donor';
+
+      if (role === 'donor') navigate('/donor/post-food');
+      else if (role === 'ngo') navigate('/ngo/dashboard');
+      else if (role === 'receiver') navigate('/receiver/dashboard');
+      else if (role === 'admin') navigate('/admin/dashboard');
+      else navigate('/');
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Google login failed');
     } finally {
       setLoading(false);
     }
@@ -48,6 +68,7 @@ export const Login = () => {
           title="Log in"
           subtitle="Good to see you again."
           onSubmit={handleLoginSubmit}
+          onGoogleSuccess={handleGoogleSuccess}
           loading={loading}
           error={error}
         />

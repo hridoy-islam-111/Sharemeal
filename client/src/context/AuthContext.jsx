@@ -45,6 +45,16 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  const googleLogin = async (idToken, role) => {
+    const data = await authService.googleLogin(idToken, role);
+    if (data.token) {
+      setToken(data.token);
+      localStorage.setItem('sharemeal_token', data.token);
+      setUser(data.user || null);
+    }
+    return data;
+  };
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -52,7 +62,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, googleLogin, logout }}>
       {children}
     </AuthContext.Provider>
   );

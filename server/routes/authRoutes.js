@@ -32,6 +32,7 @@ const handleUpload = (req, res, next) => {
 router.post('/signup', signupLimiter, handleUpload, validateRegister, authController.register);
 router.post('/register', signupLimiter, handleUpload, validateRegister, authController.register);
 router.post('/login', loginLimiter, validateLogin, authController.login);
+router.post('/google', authController.googleAuth);
 router.get('/me', protect, authController.getMe);
 router.patch('/verify/:id', protect, authController.verifyUser);
 

@@ -5,7 +5,11 @@ try {
   bcrypt = require('bcryptjs');
 }
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 const userModel = require('../models/userModel');
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '133146350441-uhsto639dp0j7379e809e83s3sis0kls.apps.googleusercontent.com';
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 /**
  * Auth Controller handles user registration, login, profile retrieval & verification
@@ -95,6 +99,61 @@ const login = async (req, res, next) => {
   }
 };
 
+const googleAuth = async (req, res, next) => {
+  try {
+    const { token: idToken, role = 'donor' } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ message: 'Google ID token is required' });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, sub: googleId } = payload;
+
+    let user = await userModel.findByEmail(email);
+
+    if (!user) {
+      const dummyPhone = `g_${googleId.slice(0, 10)}`;
+      const randomPasswordHash = await bcrypt.hash(googleId + (process.env.JWT_SECRET || 'secret'), 10);
+
+      user = await userModel.createUser({
+        name: name || 'Google User',
+        phone: dummyPhone,
+        email,
+        password_hash: randomPasswordHash,
+        role: role.toLowerCase(),
+        address: 'Registered via Google OAuth'
+      });
+    }
+
+    const jwtToken = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET || 'default_secret',
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    );
+
+    res.status(200).json({
+      message: 'Google Sign-In successful',
+      token: jwtToken,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        verification_status: user.verification_status
+      }
+    });
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    res.status(401).json({ message: 'Google authentication failed: ' + error.message });
+  }
+};
+
 const getMe = async (req, res, next) => {
   try {
     const user = await userModel.findById(req.user.id);
@@ -123,6 +182,7 @@ module.exports = {
   register,
   signup: register,
   login,
+  googleAuth,
   getMe,
   verifyUser
 };
