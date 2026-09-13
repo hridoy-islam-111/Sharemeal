@@ -8,6 +8,12 @@ const createFoodPost = async (req, res) => {
       food_type,
       quantity,
       expiry_time,
+      district,
+      thana,
+      area_ward,
+      road_no,
+      house_no,
+      floor_flat,
       latitude,
       longitude,
       status = 'available'
@@ -15,29 +21,28 @@ const createFoodPost = async (req, res) => {
 
     const image_url = req.file ? `/uploads/${req.file.filename}` : null;
 
-    if (
-      !donor_id ||
-      !food_type ||
-      !quantity ||
-      !expiry_time ||
-      latitude === undefined ||
-      longitude === undefined
-    ) {
+    if (!donor_id || !food_type || !quantity || !expiry_time) {
       return res.status(400).json({
-        message: 'All required fields must be provided'
+        message: 'Donor ID, Food Type, Quantity, and Expiry time are required.'
       });
     }
 
-    const foodPost = await foodPostModel.createFoodPost(
+    const foodPost = await foodPostModel.createFoodPost({
       donor_id,
       food_type,
       quantity,
       expiry_time,
+      district,
+      thana,
+      area_ward,
+      road_no,
+      house_no,
+      floor_flat,
       latitude,
       longitude,
       image_url,
       status
-    );
+    });
 
     res.status(201).json({
       message: 'Food post created successfully',
@@ -51,7 +56,7 @@ const createFoodPost = async (req, res) => {
     }
 
     res.status(500).json({
-      message: 'Failed to create food post'
+      message: 'Failed to create food post: ' + error.message
     });
   }
 };
@@ -104,31 +109,37 @@ const getFoodPostById = async (req, res) => {
 const updateFoodPost = async (req, res) => {
   try {
     const { id } = req.params;
-    const { food_type, quantity, expiry_time, latitude, longitude, status } = req.body;
-    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
-
-    if (
-      !food_type ||
-      !quantity ||
-      !expiry_time ||
-      latitude === undefined ||
-      longitude === undefined
-    ) {
-      return res.status(400).json({
-        message: 'All required fields must be provided'
-      });
-    }
-
-    const foodPost = await foodPostModel.updateFoodPost(
-      id,
+    const {
       food_type,
       quantity,
       expiry_time,
+      district,
+      thana,
+      area_ward,
+      road_no,
+      house_no,
+      floor_flat,
+      latitude,
+      longitude,
+      status
+    } = req.body;
+    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const foodPost = await foodPostModel.updateFoodPost(id, {
+      food_type,
+      quantity,
+      expiry_time,
+      district,
+      thana,
+      area_ward,
+      road_no,
+      house_no,
+      floor_flat,
       latitude,
       longitude,
       image_url,
       status
-    );
+    });
 
     if (!foodPost) {
       return res.status(404).json({
