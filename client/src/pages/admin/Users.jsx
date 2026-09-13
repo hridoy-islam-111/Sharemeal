@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../utils/constants';
+import AdminLayout from '../../components/admin/AdminLayout';
 import '../../App.css';
 
 export const AdminUsers = () => {
@@ -96,7 +97,7 @@ export const AdminUsers = () => {
   });
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff9f5', fontFamily: "'Plus Jakarta Sans', sans-serif", padding: '24px' }}>
+    <AdminLayout title="Users & Staff">
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         
         {/* Figma Header */}
@@ -374,7 +375,7 @@ export const AdminUsers = () => {
           </div>
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 };
 

@@ -1,13 +1,15 @@
 import React from 'react';
+import AdminLayout from '../../components/admin/AdminLayout';
 
-export const AdminReports = () => {
-  // TODO: Render reported items & dispute resolution table
+export const Reports = () => {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Platform Dispute & Food Safety Reports</h1>
-      <p className="text-gray-600">Review flagged listings and user dispute filings.</p>
-    </div>
+    <AdminLayout title="System Reports">
+      <div style={{ maxWidth: '900px', margin: '0 auto', background: '#fff', padding: '32px', borderRadius: '16px', border: '1px solid rgba(44,35,32,0.06)' }}>
+        <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#2c2320', margin: '0 0 8px' }}>📊 Audit &amp; Platform Reports</h2>
+        <p style={{ color: '#6b5d56', margin: 0 }}>Generate CSV/PDF summaries of food rescues, NGO distributions, and donor contributions.</p>
+      </div>
+    </AdminLayout>
   );
 };
 
-export default AdminReports;
+export default Reports;
