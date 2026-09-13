@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import VerificationBanner from '../../components/common/VerificationBanner';
-import { API_BASE_URL } from '../../utils/constants';
+import DonorLayout from '../../components/donor/DonorLayout';
 import '../../App.css';
 
 export const DonorDashboard = () => {
@@ -35,11 +34,8 @@ export const DonorDashboard = () => {
   const activeDonationsCount = foodPosts.length;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff9f5', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      {/* Top Verification Alert Banner */}
-      <VerificationBanner />
-
-      <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+    <DonorLayout title="Home">
+      <div style={{ width: '100%' }}>
         {/* Figma Hero Banner (Gradient) */}
         <div
           style={{
@@ -347,7 +343,7 @@ export const DonorDashboard = () => {
           </div>
         </div>
       </div>
-    </div>
+    </DonorLayout>
   );
 };
 

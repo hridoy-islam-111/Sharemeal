@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../../utils/constants';
 import { useAuth } from '../../context/AuthContext';
-import VerificationBanner from '../../components/common/VerificationBanner';
+import DonorLayout from '../../components/donor/DonorLayout';
 import '../../App.css';
 
 const API_URL = `${API_BASE_URL}/food-posts`;
@@ -174,9 +174,8 @@ export const PostFood = () => {
   const isVerified = user?.verification_status === 'verified';
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff9f5' }}>
-      <VerificationBanner />
-      <div className="p-6 max-w-4xl mx-auto">
+    <DonorLayout title="Post New Food">
+      <div style={{ width: '100%', maxWidth: '900px', margin: '0 auto' }}>
         <section className="post-card">
         <div className="steps">
           <div className="step current"><span>1</span><p>Food Info</p><b>&gt;</b></div>
@@ -331,8 +330,8 @@ export const PostFood = () => {
           </div>
         )}
       </section>
-    </div>
-  </div>
+      </div>
+    </DonorLayout>
   );
 };
 

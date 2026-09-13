@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import VerificationBanner from '../../components/common/VerificationBanner';
-import { API_BASE_URL } from '../../utils/constants';
+import DonorLayout from '../../components/donor/DonorLayout';
 import '../../App.css';
 
 export const Profile = () => {
@@ -86,11 +85,8 @@ export const Profile = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff9f5', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      {/* Verification Notification Banner */}
-      <VerificationBanner />
-
-      <div style={{ padding: '32px 24px', maxWidth: '800px', margin: '0 auto' }}>
+    <DonorLayout title="Profile">
+      <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
         {/* Profile Card Header */}
         <div style={{ background: '#ffffff', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 16px rgba(44,35,32,0.04)', marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
@@ -283,7 +279,7 @@ export const Profile = () => {
           </form>
         </div>
       </div>
-    </div>
+    </DonorLayout>
   );
 };
 
