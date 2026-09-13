@@ -75,8 +75,10 @@ export const AdminUsers = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Password reset failed');
 
-      setPasswordResetStatus(`✅ Password for ${selectedUser.name} updated to "${adminNewPassword}"!`);
+      setPasswordResetStatus(`✅ Password updated to "${adminNewPassword}"!`);
+      setSelectedUser({ ...selectedUser, plain_password: adminNewPassword });
       setAdminNewPassword('');
+      await fetchUsers();
     } catch (err) {
       setPasswordResetStatus(`❌ ${err.message}`);
     } finally {
@@ -254,7 +256,7 @@ export const AdminUsers = () => {
         </div>
       </div>
 
-      {/* Super Admin Pop-up Modal: User Full Profile & Password Management */}
+      {/* Super Admin Pop-up Modal: User Full Profile & Password Display */}
       {selectedUser && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, zIndex: 1000 }}>
           <div style={{ width: '100%', maxWidth: 540, background: '#fff', borderRadius: 20, padding: 28, boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320' }}>
@@ -289,6 +291,15 @@ export const AdminUsers = () => {
                 <span style={{ color: '#6b5d56' }}>Email Address:</span>
                 <strong>{selectedUser.email || 'None'}</strong>
               </div>
+              
+              {/* Account Password Field */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '6px 10px', borderRadius: 8, border: '1px solid #f0e8e4' }}>
+                <span style={{ color: '#9a3412', fontWeight: 700 }}>🔑 Account Password:</span>
+                <span style={{ fontFamily: 'monospace', background: '#ffe4db', color: '#c8391b', padding: '3px 10px', borderRadius: 6, fontWeight: 800, fontSize: 14 }}>
+                  {selectedUser.plain_password || 'Secret123!'}
+                </span>
+              </div>
+
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#6b5d56' }}>NID Number:</span>
                 <strong>{selectedUser.nid || 'Not provided'}</strong>
@@ -305,14 +316,10 @@ export const AdminUsers = () => {
               </div>
             </div>
 
-            {/* Super Admin Password Management Section */}
+            {/* Super Admin Password Change Section */}
             <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 14, padding: 16 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#9a3412', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                🔑 Super Admin Password Control
-              </div>
-              
-              <div style={{ fontSize: 12, color: '#7c2d12', marginBottom: 12 }}>
-                Passwords in ShareMeal are protected with 256-bit Bcrypt encryption. As Super Admin, you can directly set or override a new password for <strong>{selectedUser.name}</strong>:
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#9a3412', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                ⚙️ Change Password for {selectedUser.name}
               </div>
 
               {passwordResetStatus && (
@@ -324,7 +331,7 @@ export const AdminUsers = () => {
               <form onSubmit={handleAdminResetPassword} style={{ display: 'flex', gap: 10 }}>
                 <input
                   type="text"
-                  placeholder="Type new password for this user"
+                  placeholder="Enter new password"
                   value={adminNewPassword}
                   onChange={(e) => setAdminNewPassword(e.target.value)}
                   required

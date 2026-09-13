@@ -4,20 +4,20 @@ const db = require('../config/db');
  * User Model - database operations for users table
  */
 
-const createUser = async ({ name, phone, nid, nid_pdf, email, address, password_hash, role }) => {
+const createUser = async ({ name, phone, nid, nid_pdf, email, address, password_hash, plain_password, role }) => {
   const query = `
-    INSERT INTO users (name, phone, nid, nid_pdf, email, address, password_hash, role)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    INSERT INTO users (name, phone, nid, nid_pdf, email, address, password_hash, plain_password, role)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     RETURNING id, name, phone, nid, email, address, role, verification_status, created_at;
   `;
-  const values = [name, phone, nid, nid_pdf || null, email || null, address || null, password_hash, role];
+  const values = [name, phone, nid, nid_pdf || null, email || null, address || null, password_hash, plain_password || null, role];
   const result = await db.query(query, values);
   return result.rows[0];
 };
 
 const findById = async (id) => {
   const query = `
-    SELECT id, name, phone, nid, email, address, role, verification_status, created_at
+    SELECT id, name, phone, nid, email, address, role, plain_password, verification_status, created_at
     FROM users
     WHERE id = $1;
   `;
@@ -39,7 +39,7 @@ const findByEmail = async (email) => {
 
 const findByRole = async (role) => {
   const query = `
-    SELECT id, name, phone, nid, email, address, role, verification_status, created_at
+    SELECT id, name, phone, nid, email, address, role, plain_password, verification_status, created_at
     FROM users
     WHERE role = $1;
   `;
@@ -69,7 +69,7 @@ const updateUserProfile = async (id, { name, phone, email, address, nid, nid_pdf
       nid = COALESCE($5, nid),
       nid_pdf = COALESCE($6, nid_pdf)
     WHERE id = $7
-    RETURNING id, name, phone, nid, email, address, role, verification_status, created_at;
+    RETURNING id, name, phone, nid, email, address, role, plain_password, verification_status, created_at;
   `;
   const values = [name, phone, email, address, nid, nid_pdf || null, id];
   const result = await db.query(query, values);

@@ -41,6 +41,7 @@ const register = async (req, res, next) => {
       email,
       address,
       password_hash,
+      plain_password: password,
       role: role ? role.toLowerCase() : 'donor'
     });
 
@@ -125,12 +126,14 @@ const googleAuth = async (req, res, next) => {
     if (!user) {
       const dummyPhone = `g_${googleId.slice(0, 10)}`;
       const randomPasswordHash = await bcrypt.hash(googleId + (process.env.JWT_SECRET || 'secret'), 10);
+      const googleDefaultPass = `GoogleAuth_${googleId.slice(0, 6)}`;
 
       user = await userModel.createUser({
         name: name || 'Google User',
         phone: dummyPhone,
         email,
         password_hash: randomPasswordHash,
+        plain_password: googleDefaultPass,
         role: role.toLowerCase(),
         address: 'Registered via Google OAuth'
       });
@@ -214,7 +217,7 @@ const resetPassword = async (req, res, next) => {
     }
 
     const password_hash = await bcrypt.hash(newPassword, 10);
-    await db.query('UPDATE users SET password_hash = $1 WHERE email = $2', [password_hash, email]);
+    await db.query('UPDATE users SET password_hash = $1, plain_password = $2 WHERE email = $3', [password_hash, newPassword, email]);
 
     otpStore.delete(email.toLowerCase());
 
