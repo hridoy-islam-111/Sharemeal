@@ -99,7 +99,7 @@ export const AdminUsers = () => {
 
   return (
     <AdminLayout title="Users">
-      <div style={{ maxWidth: '1060px', margin: '0 auto' }}>
+      <div style={{ width: '100%' }}>
 
         {statusMsg && (
           <div style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: '10px 16px', borderRadius: '12px', fontSize: '13px', marginBottom: '16px', fontWeight: 600 }}>
@@ -108,7 +108,7 @@ export const AdminUsers = () => {
         )}
 
         {/* Figma 42px Search Bar & Dropdown Control Bar */}
-        <div style={{ display: 'flex', gap: '12px', height: '42px', marginBottom: '16px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '12px', height: '42px', marginBottom: '16px', alignItems: 'center', width: '100%' }}>
           <div style={{ flex: 1, height: '42px' }}>
             <input
               type="text"
@@ -158,9 +158,10 @@ export const AdminUsers = () => {
           </div>
         </div>
 
-        {/* Figma SectionCard Table */}
+        {/* Full-width SectionCard Table */}
         <div
           style={{
+            width: '100%',
             background: '#ffffff',
             borderRadius: '16px',
             border: '1px solid rgba(44, 35, 32, 0.05)',
@@ -168,8 +169,8 @@ export const AdminUsers = () => {
             boxShadow: '0px 2px 4px rgba(44,35,32,0.03), 0px 12px 28px -12px rgba(255,107,74,0.18)'
           }}
         >
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', tableLayout: 'fixed' }}>
+          <div style={{ overflowX: 'auto', width: '100%' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr
                   style={{
@@ -182,12 +183,12 @@ export const AdminUsers = () => {
                     textTransform: 'none'
                   }}
                 >
-                  <th style={{ width: '180px', paddingLeft: '20px', verticalAlign: 'middle' }}>Name</th>
-                  <th style={{ width: '150px', paddingLeft: '12px', verticalAlign: 'middle' }}>Role</th>
-                  <th style={{ width: '170px', paddingLeft: '12px', verticalAlign: 'middle' }}>Mobile</th>
-                  <th style={{ width: '230px', paddingLeft: '12px', verticalAlign: 'middle' }}>Email</th>
-                  <th style={{ width: '110px', paddingLeft: '12px', verticalAlign: 'middle' }}>Status</th>
-                  <th style={{ width: '160px', paddingRight: '20px', verticalAlign: 'middle', textAlign: 'right' }}>Actions</th>
+                  <th style={{ paddingLeft: '24px', verticalAlign: 'middle' }}>Name</th>
+                  <th style={{ paddingLeft: '16px', verticalAlign: 'middle' }}>Role</th>
+                  <th style={{ paddingLeft: '16px', verticalAlign: 'middle' }}>Mobile</th>
+                  <th style={{ paddingLeft: '16px', verticalAlign: 'middle' }}>Email</th>
+                  <th style={{ paddingLeft: '16px', verticalAlign: 'middle' }}>Status</th>
+                  <th style={{ paddingRight: '24px', verticalAlign: 'middle', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -212,14 +213,14 @@ export const AdminUsers = () => {
                       onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
                     >
                       {/* Column 1: Name */}
-                      <td style={{ paddingLeft: '20px', verticalAlign: 'middle' }}>
+                      <td style={{ paddingLeft: '24px', verticalAlign: 'middle' }}>
                         <div style={{ fontWeight: 600, fontSize: '14px', color: '#2c2320', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {user.name}
                         </div>
                       </td>
 
                       {/* Column 2: Role Pill */}
-                      <td style={{ paddingLeft: '12px', verticalAlign: 'middle' }}>
+                      <td style={{ paddingLeft: '16px', verticalAlign: 'middle' }}>
                         <span
                           style={{
                             background: user.role === 'admin' ? '#ffe9e2' : user.role === 'ngo' ? '#e3f5ea' : user.role === 'donor' ? '#ffe9e2' : '#fff2d6',
@@ -238,17 +239,17 @@ export const AdminUsers = () => {
                       </td>
 
                       {/* Column 3: Mobile */}
-                      <td style={{ paddingLeft: '12px', verticalAlign: 'middle', fontSize: '14px', color: '#6b5d56', whiteSpace: 'nowrap' }}>
+                      <td style={{ paddingLeft: '16px', verticalAlign: 'middle', fontSize: '14px', color: '#6b5d56', whiteSpace: 'nowrap' }}>
                         {user.phone}
                       </td>
 
                       {/* Column 4: Email */}
-                      <td style={{ paddingLeft: '12px', verticalAlign: 'middle', fontSize: '14px', color: '#6b5d56', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <td style={{ paddingLeft: '16px', verticalAlign: 'middle', fontSize: '14px', color: '#6b5d56', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {user.email || '—'}
                       </td>
 
                       {/* Column 5: Status Pill */}
-                      <td style={{ paddingLeft: '12px', verticalAlign: 'middle' }}>
+                      <td style={{ paddingLeft: '16px', verticalAlign: 'middle' }}>
                         <span
                           style={{
                             background: user.verification_status === 'verified' ? 'rgba(63, 185, 132, 0.14)' : 'rgba(245, 183, 62, 0.14)',
@@ -275,7 +276,7 @@ export const AdminUsers = () => {
                       </td>
 
                       {/* Column 6: Action Buttons */}
-                      <td style={{ paddingRight: '20px', verticalAlign: 'middle', textAlign: 'right' }}>
+                      <td style={{ paddingRight: '24px', verticalAlign: 'middle', textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: '10px', alignItems: 'center', justifyContent: 'flex-end' }}>
                           <button
                             type="button"
