@@ -83,13 +83,73 @@ const Icons = {
   )
 };
 
+// Initial Notification Feed with Activity Lifecycles
+const initialNotifications = [
+  {
+    id: 1,
+    type: 'donor_posted',
+    title: '🍲 Donor Posted Free Food',
+    subtitle: 'Priya Sharma posted 40 Fresh Meal Boxes in Dhanmondi',
+    time: '10 mins ago',
+    unread: true,
+    thread: [
+      { step: 1, label: 'Food Posted by Donor', detail: 'Priya Sharma submitted post #104 (40 Rice & Curry Boxes)', status: 'completed', time: '10 mins ago' },
+      { step: 2, label: 'NGO Accepted', detail: 'Care Bangladesh NGO accepted donation request', status: 'completed', time: '8 mins ago' },
+      { step: 3, label: 'Picked to Hub', detail: 'Collection Staff Ramesh picked up food from Dhanmondi Hub', status: 'completed', time: '4 mins ago' },
+      { step: 4, label: 'Distributed', detail: 'Successfully Distributed to 40 beneficiaries at Lalmatia Center', status: 'completed', time: 'Just now' }
+    ]
+  },
+  {
+    id: 2,
+    type: 'new_donor',
+    title: '👤 New Donor Joined',
+    subtitle: 'Abdur Rahman registered as Verified Donor',
+    time: '25 mins ago',
+    unread: true,
+    thread: [
+      { step: 1, label: 'Account Registered', detail: 'Abdur Rahman submitted registration with mobile 01700998877', status: 'completed', time: '25 mins ago' },
+      { step: 2, label: 'NID Document Uploaded', detail: 'NID Document #1992837102 uploaded for verification', status: 'completed', time: '20 mins ago' },
+      { step: 3, label: 'Super Admin Approval', detail: 'Super Admin verified profile & granted food posting access', status: 'completed', time: '15 mins ago' }
+    ]
+  },
+  {
+    id: 3,
+    type: 'new_receiver',
+    title: '👤 New Food Receiver Joined',
+    subtitle: 'Karim Ahmed registered as Food Receiver',
+    time: '1 hour ago',
+    unread: true,
+    thread: [
+      { step: 1, label: 'Receiver Account Created', detail: 'Karim Ahmed registered from Mirpur-10', status: 'completed', time: '1 hour ago' },
+      { step: 2, label: 'Location Verified', detail: 'GPS Address verified for food distribution point', status: 'completed', time: '45 mins ago' }
+    ]
+  },
+  {
+    id: 4,
+    type: 'receiver_requested',
+    title: '📦 Receiver Requested Food',
+    subtitle: 'Rahim requested 15 Warm Meal Packets in Uttara',
+    time: '2 hours ago',
+    unread: false,
+    thread: [
+      { step: 1, label: 'Food Request Created', detail: 'Rahim requested 15 emergency meal packets for family', status: 'completed', time: '2 hours ago' },
+      { step: 2, label: 'NGO Accepted', detail: 'Anjuman Mokhles NGO assigned distribution request #209', status: 'completed', time: '1.5 hours ago' },
+      { step: 3, label: 'Picked to Hub', detail: 'Distributor Staff Tanvir loaded meals at Sector 4 Hub', status: 'completed', time: '1 hour ago' },
+      { step: 4, label: 'Distributed', detail: 'Handed over directly to Rahim at Uttara distribution spot', status: 'completed', time: '30 mins ago' }
+    ]
+  }
+];
+
 export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Profile modal & settings states
+  // Profile modal & notification panel states
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showNotificationPanel, setShowNotificationPanel] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [notifications, setNotifications] = useState(initialNotifications);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [otpSentMsg, setOtpSentMsg] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
@@ -98,6 +158,16 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
     logout();
     navigate('/admin/login');
   };
+
+  const handleNotificationClick = (notif) => {
+    setSelectedNotification(notif);
+    // Mark as read
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === notif.id ? { ...n, unread: false } : n))
+    );
+  };
+
+  const unreadCount = notifications.filter((n) => n.unread).length;
 
   const handleForgotPasswordClick = async () => {
     setOtpLoading(true);
@@ -175,7 +245,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
                 background: '#ff6b4a',
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'center',
+                justifyContent: 'center',
                 color: '#fff',
                 boxShadow: '0px 6px 7px rgba(255,107,74,0.6)',
                 flexShrink: 0
@@ -201,7 +271,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'space-between',
+                    justifyContent: 'space-between',
                     padding: '10px 12px',
                     height: '40px',
                     borderRadius: '12px',
@@ -259,7 +329,7 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
                 fontSize: 13,
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'center',
+                justifyContent: 'center',
                 flexShrink: 0
               }}
             >
@@ -317,17 +387,18 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
             alignItems: 'center',
             justify: 'space-between',
             flexShrink: 0,
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            position: 'relative'
           }}
         >
           <h2 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: '#2c2320', fontFamily: "'Fraunces', serif" }}>
             {title}
           </h2>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 'auto', position: 'relative' }}>
             {/* Notifications Button */}
             <div
-              onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+              onClick={() => setShowNotificationPanel(!showNotificationPanel)}
               style={{
                 position: 'relative',
                 width: 40,
@@ -336,54 +407,97 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
                 background: 'rgba(44,35,32,0.05)',
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'center',
+                justifyContent: 'center',
                 cursor: 'pointer'
               }}
-              title={`Notifications ${notificationsEnabled ? 'Enabled' : 'Disabled'}`}
+              title="Click to view notifications and activity lifecycles"
             >
               <Icons.Bell />
-              {notificationsEnabled && (
+              {unreadCount > 0 && (
                 <div
                   style={{
                     position: 'absolute',
                     top: -2,
-                    left: 26,
+                    left: 24,
                     background: '#ff6b4a',
-                    color: '#fff',
-                    fontSize: 9,
+                    color: '#ffffff',
+                    fontSize: '9px',
                     fontWeight: 700,
-                    width: 16,
-                    height: 16,
+                    width: '16px',
+                    height: '16px',
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'center'
+                    justifyContent: 'center',
+                    lineHeight: 1,
+                    textAlign: 'center'
                   }}
                 >
-                  7
+                  {unreadCount}
                 </div>
               )}
             </div>
 
-            {/* Profile Avatar Circle */}
-            <div
-              onClick={() => setShowProfileModal(true)}
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: '50%',
-                background: '#ffe4db',
-                color: '#c8391b',
-                fontWeight: 700,
-                fontSize: 12,
-                display: 'flex',
-                alignItems: 'center',
-                justify: 'center',
-                cursor: 'pointer'
-              }}
-            >
-              {getInitials(user?.name || 'Hridoy Islam')}
-            </div>
+            {/* Notification Dropdown Panel */}
+            {showNotificationPanel && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '52px',
+                  right: 0,
+                  width: '360px',
+                  background: '#ffffff',
+                  borderRadius: '16px',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+                  border: '1px solid rgba(44,35,32,0.08)',
+                  zIndex: 1000,
+                  overflow: 'hidden'
+                }}
+              >
+                <div style={{ padding: '16px', borderBottom: '1px solid #f0e8e4', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fcf8f6' }}>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#2c2320' }}>Platform Notifications</h4>
+                    <span style={{ fontSize: '12px', color: '#6b5d56' }}>Realtime Donor &amp; Receiver Activity</span>
+                  </div>
+                  <button
+                    onClick={() => setShowNotificationPanel(false)}
+                    style={{ background: 'transparent', border: 0, fontSize: '18px', cursor: 'pointer', color: '#888' }}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div style={{ maxHeight: '360px', overflowY: 'auto' }}>
+                  {notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      onClick={() => {
+                        handleNotificationClick(notif);
+                        setShowNotificationPanel(false);
+                      }}
+                      style={{
+                        padding: '14px 16px',
+                        borderBottom: '1px solid #f7f2ef',
+                        background: notif.unread ? '#fff7ed' : '#ffffff',
+                        cursor: 'pointer',
+                        transition: 'background 0.15s'
+                      }}
+                      onMouseOver={(e) => (e.currentTarget.style.background = '#fcf8f6')}
+                      onMouseOut={(e) => (e.currentTarget.style.background = notif.unread ? '#fff7ed' : '#ffffff')}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#2c2320' }}>{notif.title}</span>
+                        <span style={{ fontSize: '11px', color: '#9a3412', fontWeight: 600 }}>{notif.time}</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: '12px', color: '#6b5d56', lineHeight: '16px' }}>{notif.subtitle}</p>
+                      <div style={{ marginTop: 8, fontSize: '11px', color: '#ff6b4a', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span>View Activity Thread Lifecycle →</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </header>
 
@@ -392,6 +506,101 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
           {children}
         </main>
       </div>
+
+      {/* Activity Lifecycle Thread Modal */}
+      {selectedNotification && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 3000 }}>
+          <div style={{ width: '100%', maxWidth: '520px', background: '#ffffff', borderRadius: '20px', padding: '28px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#2c2320' }}>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #eee5e0', paddingBottom: '12px' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#2c2320' }}>{selectedNotification.title}</h3>
+                <span style={{ fontSize: '12px', color: '#6b5d56' }}>Activity Lifecycle Thread • {selectedNotification.time}</span>
+              </div>
+              <button onClick={() => setSelectedNotification(null)} style={{ background: 'transparent', border: 0, fontSize: '20px', cursor: 'pointer', color: '#888' }}>✕</button>
+            </div>
+
+            <p style={{ fontSize: '14px', color: '#2c2320', fontWeight: 600, background: '#fcf8f6', padding: '12px 16px', borderRadius: '12px', border: '1px solid #eee5e0', marginBottom: '20px' }}>
+              {selectedNotification.subtitle}
+            </p>
+
+            {/* Lifecycle Timeline Thread */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', paddingLeft: '8px', position: 'relative', marginBottom: '24px' }}>
+              {selectedNotification.thread.map((item, idx) => (
+                <div key={item.step} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', position: 'relative' }}>
+                  {/* Vertical connecting line */}
+                  {idx < selectedNotification.thread.length - 1 && (
+                    <div style={{ position: 'absolute', left: '13px', top: '26px', bottom: '-16px', width: '2px', background: '#10b981' }} />
+                  )}
+
+                  {/* Step status circle */}
+                  <div
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: '50%',
+                      background: '#10b981',
+                      color: '#ffffff',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justify: 'center',
+                      flexShrink: 0,
+                      zIndex: 1,
+                      boxShadow: '0 2px 6px rgba(16,185,129,0.4)'
+                    }}
+                  >
+                    ✓
+                  </div>
+
+                  <div style={{ flex: 1, background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '12px 16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                      <span style={{ fontSize: '13px', fontWeight: 700, color: '#111827' }}>Step {item.step}: {item.label}</span>
+                      <span style={{ fontSize: '11px', color: '#6b7280' }}>{item.time}</span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: '12px', color: '#4b5563', lineHeight: '16px' }}>{item.detail}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              {(selectedNotification.type === 'new_donor' || selectedNotification.type === 'new_receiver') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedNotification(null);
+                    navigate('/admin/users');
+                  }}
+                  style={{
+                    background: '#10b981',
+                    color: '#ffffff',
+                    border: 0,
+                    borderRadius: '10px',
+                    padding: '10px 18px',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 10px rgba(16,185,129,0.3)'
+                  }}
+                >
+                  👤 Inspect Profile &amp; Verify User →
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setSelectedNotification(null)}
+                style={{ background: '#ff6b4a', color: '#ffffff', border: 0, borderRadius: '10px', padding: '10px 20px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+              >
+                Close Thread Lifecycle
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* Pop-up Modal when clicking on Hridoy Islam Profile */}
       {showProfileModal && (
