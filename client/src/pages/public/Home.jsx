@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import './Home.css';
 
 export const Home = () => {
   const { user, logout } = useAuth();
@@ -218,16 +219,16 @@ export const Home = () => {
 
           {/* Center Nav Links */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }} className="hidden md:flex">
-            <a href="#how-it-works" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600, transition: 'color 0.2s' }}>
+            <a href="#how-it-works" className="nav-link-item" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
               How it works
             </a>
-            <Link to="/find-food" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600, transition: 'color 0.2s' }}>
+            <Link to="/find-food" className="nav-link-item" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
               Find food
             </Link>
-            <Link to="/donate" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600, transition: 'color 0.2s' }}>
+            <Link to="/donate" className="nav-link-item" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
               Donate
             </Link>
-            <a href="#stories" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600, transition: 'color 0.2s' }}>
+            <a href="#stories" className="nav-link-item" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
               Stories
             </a>
           </div>
@@ -256,6 +257,7 @@ export const Home = () => {
                 </Link>
                 <Link
                   to="/signup"
+                  className="btn-primary-hover"
                   style={{
                     textDecoration: 'none',
                     background: '#ff6b4a',
@@ -267,8 +269,7 @@ export const Home = () => {
                     boxShadow: '0 8px 20px rgba(255, 107, 74, 0.35)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    transition: 'transform 0.2s, box-shadow 0.2s'
+                    gap: '6px'
                   }}
                 >
                   Get started <span>→</span>
@@ -328,6 +329,7 @@ export const Home = () => {
             <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '36px' }}>
               <Link
                 to="/donate"
+                className="btn-primary-hover"
                 style={{
                   textDecoration: 'none',
                   background: '#ff6b4a',
@@ -339,14 +341,14 @@ export const Home = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  boxShadow: '0 12px 28px rgba(255, 107, 74, 0.4)',
-                  transition: 'all 0.2s'
+                  boxShadow: '0 12px 28px rgba(255, 107, 74, 0.4)'
                 }}
               >
                 <span>🎁</span> Donate food
               </Link>
               <Link
                 to="/find-food"
+                className="btn-secondary-hover"
                 style={{
                   textDecoration: 'none',
                   background: 'rgba(255, 255, 255, 0.7)',
@@ -358,8 +360,7 @@ export const Home = () => {
                   fontWeight: 700,
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '8px',
-                  transition: 'all 0.2s'
+                  gap: '8px'
                 }}
               >
                 <span>🔍</span> Find a meal
@@ -403,12 +404,12 @@ export const Home = () => {
             
             {/* Main Picture Frame */}
             <div
+              className="hero-image-frame"
               style={{
                 width: '100%',
                 maxWidth: '460px',
                 height: '430px',
                 borderRadius: '32px',
-                overflow: 'hidden',
                 background: '#ffe9e2',
                 border: '5px solid #ffffff',
                 boxShadow: '0 20px 50px -10px rgba(255, 107, 74, 0.25), 0 40px 90px -30px rgba(44, 35, 32, 0.2)'
@@ -423,6 +424,7 @@ export const Home = () => {
 
             {/* Top-Left Floating Glass Card: "Live now • 3,235 posts" */}
             <div
+              className="floating-badge"
               style={{
                 position: 'absolute',
                 top: '28px',
@@ -466,6 +468,7 @@ export const Home = () => {
 
             {/* Bottom-Right Floating Glass Card: "Meal #4821 • Received • Delivered to Asha Shelter" */}
             <div
+              className="floating-badge"
               style={{
                 position: 'absolute',
                 bottom: '-20px',
@@ -482,7 +485,7 @@ export const Home = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <span style={{ fontSize: '12px', fontWeight: 800, color: '#2c2320' }}>Meal #4821</span>
                 <span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '100px', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a' }}></span> Received
+                  <span className="pulse-green-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }}></span> Received
                 </span>
               </div>
               <div style={{ fontSize: '12px', color: '#6b5d56', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
@@ -495,6 +498,7 @@ export const Home = () => {
             </div>
 
           </div>
+
 
         </div>
       </section>
@@ -514,6 +518,7 @@ export const Home = () => {
             <Link
               key={idx}
               to={cat.link}
+              className="category-card"
               style={{
                 textDecoration: 'none',
                 background: '#ffffff',
@@ -523,11 +528,10 @@ export const Home = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '16px',
-                boxShadow: '0 4px 16px rgba(44, 35, 32, 0.04)',
-                transition: 'transform 0.2s, box-shadow 0.2s'
+                boxShadow: '0 4px 16px rgba(44, 35, 32, 0.04)'
               }}
             >
-              <div style={{ width: '52px', height: '52px', borderRadius: '16px', background: cat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
+              <div className="cat-icon" style={{ width: '52px', height: '52px', borderRadius: '16px', background: cat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
                 {cat.icon}
               </div>
               <div style={{ flex: 1 }}>
@@ -538,7 +542,7 @@ export const Home = () => {
                   {cat.count}
                 </div>
               </div>
-              <span style={{ color: '#ff6b4a', fontSize: '18px', fontWeight: 800 }}>→</span>
+              <span className="cat-arrow" style={{ color: '#ff6b4a', fontSize: '18px', fontWeight: 800, display: 'inline-block' }}>→</span>
             </Link>
           ))}
 
@@ -560,6 +564,7 @@ export const Home = () => {
           {partners.concat(partners).map((partner, idx) => (
             <div
               key={idx}
+              className="ticker-pill"
               style={{
                 flexShrink: 0,
                 display: 'flex',
@@ -572,7 +577,8 @@ export const Home = () => {
                 fontSize: '13px',
                 fontWeight: 700,
                 color: '#4a3e39',
-                boxShadow: '0 2px 8px rgba(44, 35, 32, 0.03)'
+                boxShadow: '0 2px 8px rgba(44, 35, 32, 0.03)',
+                cursor: 'pointer'
               }}
             >
               <span style={{ color: '#ff6b4a' }}>●</span>
@@ -607,6 +613,7 @@ export const Home = () => {
             ].map((step, idx) => (
               <div
                 key={idx}
+                className="step-card"
                 style={{
                   background: '#ffffff',
                   border: '1px solid rgba(44, 35, 32, 0.06)',
@@ -616,15 +623,16 @@ export const Home = () => {
                   boxShadow: '0 8px 24px rgba(44, 35, 32, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
+                  cursor: 'pointer'
                 }}
               >
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                    <div style={{ width: '52px', height: '52px', borderRadius: '16px', background: step.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
+                    <div className="step-icon-tile" style={{ width: '52px', height: '52px', borderRadius: '16px', background: step.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
                       {step.icon}
                     </div>
-                    <span style={{ fontFamily: "'Fraunces', serif", fontSize: '36px', fontWeight: 800, color: '#f1e8e2' }}>
+                    <span className="step-number" style={{ fontFamily: "'Fraunces', serif", fontSize: '36px', fontWeight: 800, color: '#f1e8e2' }}>
                       {step.num}
                     </span>
                   </div>
@@ -642,6 +650,7 @@ export const Home = () => {
 
         </div>
       </section>
+
 
       {/* ========================================================
           6. TRENDING FOOD POSTS (From Figma Node 8:22782)
@@ -668,6 +677,7 @@ export const Home = () => {
             {trendingPosts.map((post) => (
               <div
                 key={post.id}
+                className="food-card"
                 style={{
                   background: '#ffffff',
                   borderRadius: '20px',
@@ -681,7 +691,7 @@ export const Home = () => {
               >
                 <div>
                   {/* Photo with pill badges */}
-                  <div style={{ position: 'relative', height: '175px', width: '100%', overflow: 'hidden' }}>
+                  <div className="food-img-wrapper" style={{ position: 'relative', height: '175px', width: '100%', overflow: 'hidden' }}>
                     <img src={post.image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     <span style={{ position: 'absolute', top: '12px', left: '12px', background: post.tagBg, color: post.tagColor, padding: '4px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: 800 }}>
                       {post.tag}
@@ -714,6 +724,7 @@ export const Home = () => {
                 <div style={{ padding: '0 18px 18px' }}>
                   <button
                     onClick={() => navigate('/find-food')}
+                    className="card-btn"
                     style={{
                       width: '100%',
                       background: '#ff6b4a',
@@ -796,6 +807,7 @@ export const Home = () => {
             {/* Right Column: Interactive Anonymous Card Simulation */}
             <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 5 }}>
               <div
+                className="anonymous-showcase-card"
                 style={{
                   width: '100%',
                   maxWidth: '360px',
@@ -887,6 +899,7 @@ export const Home = () => {
             {drives.map((drive) => (
               <div
                 key={drive.id}
+                className="drive-card"
                 style={{
                   background: '#ffffff',
                   border: '1px solid rgba(44, 35, 32, 0.07)',
@@ -895,7 +908,8 @@ export const Home = () => {
                   boxShadow: '0 8px 24px rgba(44, 35, 32, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
+                  cursor: 'pointer'
                 }}
               >
                 <div>
@@ -925,6 +939,7 @@ export const Home = () => {
 
                 <button
                   onClick={() => setSelectedDrive(drive)}
+                  className="drive-btn"
                   style={{
                     width: '100%',
                     background: '#2c2320',
@@ -934,8 +949,7 @@ export const Home = () => {
                     borderRadius: '12px',
                     fontSize: '13px',
                     fontWeight: 700,
-                    cursor: 'pointer',
-                    transition: 'background 0.2s'
+                    cursor: 'pointer'
                   }}
                 >
                   Volunteer for this drive →
@@ -979,7 +993,7 @@ export const Home = () => {
                 { number: '96%', title: 'Reach their plate', sub: 'tracked to receipt' },
                 { number: '62 t', title: 'CO₂ saved', sub: 'from landfill each month' }
               ].map((stat, idx) => (
-                <div key={idx} style={{ borderRight: idx < 3 ? '1px solid rgba(255,255,255,0.15)' : 'none', padding: '0 12px' }}>
+                <div key={idx} className="impact-stat-item" style={{ borderRight: idx < 3 ? '1px solid rgba(255,255,255,0.15)' : 'none', padding: '0 12px' }}>
                   <div style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(36px, 4vw, 48px)', fontWeight: 800, letterSpacing: '-1px', marginBottom: '6px' }}>
                     {stat.number}
                   </div>
@@ -1018,17 +1032,17 @@ export const Home = () => {
             {stories.map((story) => (
               <div
                 key={story.id}
+                className="story-card"
                 style={{
                   background: '#ffffff',
                   borderRadius: '24px',
                   overflow: 'hidden',
                   border: '1px solid rgba(44, 35, 32, 0.06)',
                   boxShadow: '0 8px 24px rgba(44, 35, 32, 0.04)',
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s'
+                  cursor: 'pointer'
                 }}
               >
-                <div style={{ height: '210px', width: '100%', overflow: 'hidden' }}>
+                <div className="story-img-wrapper" style={{ height: '210px', width: '100%', overflow: 'hidden' }}>
                   <img src={story.image} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <div style={{ padding: '22px' }}>
@@ -1043,7 +1057,7 @@ export const Home = () => {
                   <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: '18px', fontWeight: 800, color: '#2c2320', lineHeight: 1.4, margin: '0 0 12px' }}>
                     {story.title}
                   </h3>
-                  <span style={{ color: '#ff6b4a', fontSize: '13px', fontWeight: 700 }}>
+                  <span className="story-link" style={{ color: '#ff6b4a', fontSize: '13px', fontWeight: 700 }}>
                     Read story →
                   </span>
                 </div>
@@ -1081,6 +1095,7 @@ export const Home = () => {
             {faqs.map((faq, idx) => (
               <div
                 key={idx}
+                className="faq-item"
                 style={{
                   background: '#ffffff',
                   border: '1px solid rgba(44, 35, 32, 0.08)',
@@ -1106,7 +1121,7 @@ export const Home = () => {
                   <span style={{ fontSize: '16px', fontWeight: 800, color: '#2c2320' }}>
                     {faq.q}
                   </span>
-                  <span style={{ width: '28px', height: '28px', borderRadius: '50%', background: openFaq === idx ? '#ffe4db' : '#f3f4f6', color: openFaq === idx ? '#c8391b' : '#6b5d56', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold' }}>
+                  <span className="faq-badge" style={{ width: '28px', height: '28px', borderRadius: '50%', background: openFaq === idx ? '#ffe4db' : '#f3f4f6', color: openFaq === idx ? '#c8391b' : '#6b5d56', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 'bold' }}>
                     {openFaq === idx ? '−' : '+'}
                   </span>
                 </button>
@@ -1130,6 +1145,7 @@ export const Home = () => {
           
           {/* Card 1: Give Food */}
           <div
+            className="dual-cta-card"
             style={{
               background: '#ffffff',
               border: '1.5px solid #fed7aa',
@@ -1138,7 +1154,7 @@ export const Home = () => {
               boxShadow: '0 8px 24px rgba(240, 75, 40, 0.06)'
             }}
           >
-            <div style={{ width: '56px', height: '56px', borderRadius: '18px', background: '#ffedd5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', marginBottom: '20px' }}>
+            <div className="cta-icon" style={{ width: '56px', height: '56px', borderRadius: '18px', background: '#ffedd5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', marginBottom: '20px' }}>
               🎁
             </div>
             <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: '24px', fontWeight: 800, color: '#2c2320', margin: '0 0 10px' }}>
@@ -1149,6 +1165,7 @@ export const Home = () => {
             </p>
             <Link
               to="/donate"
+              className="btn-secondary-hover"
               style={{
                 textDecoration: 'none',
                 background: '#2c2320',
@@ -1159,7 +1176,8 @@ export const Home = () => {
                 fontWeight: 700,
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '8px',
+                border: '1px solid transparent'
               }}
             >
               Become a donor <span>→</span>
@@ -1168,6 +1186,7 @@ export const Home = () => {
 
           {/* Card 2: Need Food */}
           <div
+            className="dual-cta-card"
             style={{
               background: '#ffffff',
               border: '1.5px solid #bbf7d0',
@@ -1176,7 +1195,7 @@ export const Home = () => {
               boxShadow: '0 8px 24px rgba(16, 185, 129, 0.06)'
             }}
           >
-            <div style={{ width: '56px', height: '56px', borderRadius: '18px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', marginBottom: '20px' }}>
+            <div className="cta-icon" style={{ width: '56px', height: '56px', borderRadius: '18px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', marginBottom: '20px' }}>
               🍲
             </div>
             <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: '24px', fontWeight: 800, color: '#2c2320', margin: '0 0 10px' }}>
@@ -1187,6 +1206,7 @@ export const Home = () => {
             </p>
             <Link
               to="/find-food"
+              className="btn-primary-hover"
               style={{
                 textDecoration: 'none',
                 background: '#15803d',
@@ -1257,6 +1277,7 @@ export const Home = () => {
                 />
                 <button
                   type="submit"
+                  className="btn-primary-hover"
                   style={{
                     background: '#ff6b4a',
                     color: '#ffffff',
@@ -1302,7 +1323,7 @@ export const Home = () => {
               </p>
               <div style={{ display: 'flex', gap: '10px' }}>
                 {['🕊️', '📘', '📸'].map((icon, idx) => (
-                  <div key={idx} style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#faf5f2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', cursor: 'pointer', border: '1px solid #eee5e0' }}>
+                  <div key={idx} className="footer-social-btn" style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#faf5f2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', cursor: 'pointer', border: '1px solid #eee5e0' }}>
                     {icon}
                   </div>
                 ))}
@@ -1315,10 +1336,10 @@ export const Home = () => {
                 Platform
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '10px', fontSize: '13px', color: '#6b5d56' }}>
-                <li><Link to="/find-food" style={{ textDecoration: 'none', color: 'inherit' }}>Find food</Link></li>
-                <li><Link to="/donate" style={{ textDecoration: 'none', color: 'inherit' }}>Donate food</Link></li>
-                <li><Link to="/ngo/login" style={{ textDecoration: 'none', color: 'inherit' }}>For NGOs</Link></li>
-                <li><a href="#how-it-works" style={{ textDecoration: 'none', color: 'inherit' }}>How it works</a></li>
+                <li><Link to="/find-food" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>Find food</Link></li>
+                <li><Link to="/donate" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>Donate food</Link></li>
+                <li><Link to="/ngo/login" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>For NGOs</Link></li>
+                <li><a href="#how-it-works" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>How it works</a></li>
                 <li><span style={{ color: '#aaa' }}>Pricing (Free)</span></li>
               </ul>
             </div>
@@ -1329,11 +1350,11 @@ export const Home = () => {
                 Company
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '10px', fontSize: '13px', color: '#6b5d56' }}>
-                <li><a href="#how-it-works" style={{ textDecoration: 'none', color: 'inherit' }}>About us</a></li>
-                <li><a href="#stories" style={{ textDecoration: 'none', color: 'inherit' }}>Stories</a></li>
+                <li><a href="#how-it-works" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>About us</a></li>
+                <li><a href="#stories" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>Stories</a></li>
                 <li><span style={{ color: '#aaa' }}>Careers</span></li>
                 <li><span style={{ color: '#aaa' }}>Press kit</span></li>
-                <li><a href="mailto:contact@sharemeal.org" style={{ textDecoration: 'none', color: 'inherit' }}>Contact</a></li>
+                <li><a href="mailto:contact@sharemeal.org" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>Contact</a></li>
               </ul>
             </div>
 
@@ -1343,11 +1364,11 @@ export const Home = () => {
                 Support &amp; Trust
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '10px', fontSize: '13px', color: '#6b5d56' }}>
-                <li><a href="mailto:help@sharemeal.org" style={{ textDecoration: 'none', color: 'inherit' }}>Help centre</a></li>
-                <li><span style={{ color: '#6b5d56' }}>Safety protocols</span></li>
-                <li><span style={{ color: '#6b5d56' }}>Privacy policy</span></li>
-                <li><span style={{ color: '#6b5d56' }}>Terms of service</span></li>
-                <li><Link to="/admin/login" style={{ textDecoration: 'none', color: '#ff6b4a', fontWeight: 700 }}>Admin Portal</Link></li>
+                <li><a href="mailto:help@sharemeal.org" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>Help centre</a></li>
+                <li><span className="footer-link" style={{ color: '#6b5d56', cursor: 'pointer' }}>Safety protocols</span></li>
+                <li><span className="footer-link" style={{ color: '#6b5d56', cursor: 'pointer' }}>Privacy policy</span></li>
+                <li><span className="footer-link" style={{ color: '#6b5d56', cursor: 'pointer' }}>Terms of service</span></li>
+                <li><Link to="/admin/login" className="footer-link" style={{ textDecoration: 'none', color: '#ff6b4a', fontWeight: 700 }}>Admin Portal</Link></li>
               </ul>
             </div>
 

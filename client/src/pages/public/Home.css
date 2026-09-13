@@ -1,0 +1,337 @@
+/* ========================================================
+   ShareMeal Landing Page Rich Micro-Animations & Hover Effects
+======================================================== */
+
+/* Smooth Global Transitions */
+.interactive-card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease;
+  will-change: transform, box-shadow;
+}
+
+.interactive-card:hover {
+  transform: translateY(-6px);
+}
+
+/* Category Cards Hover */
+.category-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.category-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 16px 36px rgba(44, 35, 32, 0.09) !important;
+  border-color: #ff6b4a !important;
+}
+
+.category-card .cat-icon {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.category-card:hover .cat-icon {
+  transform: scale(1.12) rotate(6deg);
+}
+
+.category-card .cat-arrow {
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.category-card:hover .cat-arrow {
+  transform: translateX(6px);
+  color: #d9381e !important;
+}
+
+/* Hero Food Image Frame */
+.hero-image-frame {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+  overflow: hidden;
+}
+
+.hero-image-frame img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-image-frame:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 60px -15px rgba(255, 107, 74, 0.35), 0 50px 100px -30px rgba(44, 35, 32, 0.25) !important;
+}
+
+.hero-image-frame:hover img {
+  transform: scale(1.06);
+}
+
+/* Floating Badges in Hero */
+.floating-badge {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.floating-badge:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 20px 48px rgba(44, 35, 32, 0.18) !important;
+}
+
+/* Button Animations */
+.btn-primary-hover {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.btn-primary-hover:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 16px 32px rgba(255, 107, 74, 0.5) !important;
+  background: #f04b28 !important;
+}
+
+.btn-primary-hover:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-secondary-hover {
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-hover:hover {
+  transform: translateY(-2px);
+  background: #ffffff !important;
+  border-color: #f04b28 !important;
+  box-shadow: 0 8px 20px rgba(240, 75, 40, 0.15) !important;
+}
+
+/* Food Post Cards Hover */
+.food-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.3s ease;
+}
+
+.food-card .food-img-wrapper img {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.food-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(44, 35, 32, 0.1) !important;
+  border-color: #ffd8cc !important;
+}
+
+.food-card:hover .food-img-wrapper img {
+  transform: scale(1.08);
+}
+
+.food-card .card-btn {
+  transition: all 0.25s ease;
+}
+
+.food-card:hover .card-btn {
+  background: #d9381e !important;
+  box-shadow: 0 8px 20px rgba(217, 56, 30, 0.35) !important;
+}
+
+/* How It Works Steps */
+.step-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.step-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 36px rgba(44, 35, 32, 0.08) !important;
+  border-color: #ffdecb !important;
+}
+
+.step-card .step-icon-tile {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.step-card:hover .step-icon-tile {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+.step-card:hover .step-number {
+  color: #ff8461 !important;
+  transition: color 0.3s ease;
+}
+
+/* NGO Drive Cards */
+.drive-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drive-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 16px 36px rgba(44, 35, 32, 0.09) !important;
+  border-color: #ffd7c9 !important;
+}
+
+.drive-card .drive-btn {
+  transition: all 0.25s ease;
+}
+
+.drive-card:hover .drive-btn {
+  background: #ff6b4a !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(255, 107, 74, 0.3) !important;
+}
+
+/* Story Cards Hover */
+.story-card {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.story-card .story-img-wrapper img {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.story-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 18px 38px rgba(44, 35, 32, 0.09) !important;
+  border-color: #fed7aa !important;
+}
+
+.story-card:hover .story-img-wrapper img {
+  transform: scale(1.08);
+}
+
+.story-card .story-link {
+  transition: transform 0.25s ease, color 0.25s ease;
+  display: inline-block;
+}
+
+.story-card:hover .story-link {
+  transform: translateX(6px);
+  color: #d9381e !important;
+}
+
+/* FAQ Item Hover */
+.faq-item {
+  transition: all 0.25s ease;
+}
+
+.faq-item:hover {
+  border-color: #ffbcab !important;
+  box-shadow: 0 6px 18px rgba(240, 75, 40, 0.06) !important;
+  background: #fffdfb !important;
+}
+
+.faq-badge {
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.faq-item:hover .faq-badge {
+  transform: scale(1.1);
+  background: #ffe4db !important;
+  color: #d9381e !important;
+}
+
+/* Dual CTA Split Cards Hover */
+.dual-cta-card {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dual-cta-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 20px 48px rgba(44, 35, 32, 0.1) !important;
+}
+
+.dual-cta-card .cta-icon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dual-cta-card:hover .cta-icon {
+  transform: scale(1.15) rotate(5deg);
+}
+
+/* Navigation Links Hover */
+.nav-link-item {
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-link-item::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #f04b28;
+  border-radius: 2px;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link-item:hover {
+  color: #f04b28 !important;
+}
+
+.nav-link-item:hover::after {
+  width: 100%;
+}
+
+/* Ticker Pill Hover */
+.ticker-pill {
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ticker-pill:hover {
+  transform: translateY(-2px) scale(1.03);
+  background: #fff3ee !important;
+  border-color: #ffa286 !important;
+  box-shadow: 0 4px 14px rgba(255, 107, 74, 0.15) !important;
+}
+
+/* Pulse animation for Live Now dot */
+@keyframes pulseDot {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.pulse-green-dot {
+  animation: pulseDot 2s infinite;
+}
+
+/* Impact Pillar Hover */
+.impact-stat-item {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.impact-stat-item:hover {
+  transform: translateY(-4px) scale(1.03);
+}
+
+/* Anonymous Showcase Card */
+.anonymous-showcase-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+.anonymous-showcase-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Footer Link Hover */
+.footer-link {
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+.footer-link:hover {
+  color: #ff6b4a !important;
+  transform: translateX(4px);
+}
+
+/* Footer Social Buttons */
+.footer-social-btn {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, border-color 0.2s ease;
+}
+
+.footer-social-btn:hover {
+  transform: translateY(-3px) scale(1.1);
+  background: #ffede8 !important;
+  border-color: #ffa286 !important;
+}
