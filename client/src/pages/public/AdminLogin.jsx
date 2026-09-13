@@ -57,8 +57,8 @@ export const AdminLogin = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to send OTP code');
 
-      setOtpMsg(`OTP generated for ${recoveryEmail}: ${data.otp || '(Check server console)'}`);
-      if (data.otp) setOtpCode(data.otp);
+      setOtpCode('');
+      setOtpMsg(`✉️ 6-digit OTP code sent to ${recoveryEmail}. Please check your email inbox!`);
       setOtpStep(2);
     } catch (err) {
       setOtpErr(err.message || 'Error requesting OTP code');

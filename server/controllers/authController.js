@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const userModel = require('../models/userModel');
 const db = require('../config/db');
+const { sendOtpEmail } = require('../services/emailService');
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '133146350441-uhsto639dp0j7379e809e83s3sis0kls.apps.googleusercontent.com';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -186,9 +187,17 @@ const forgotPassword = async (req, res, next) => {
     console.log(`🔑 PASSWORD RESET OTP FOR ${email}: [ ${otp} ]`);
     console.log(`==========================================\n`);
 
+    // Send real email via Nodemailer SMTP
+    let emailResult;
+    try {
+      emailResult = await sendOtpEmail(email, otp);
+    } catch (mailErr) {
+      console.error('Email Sending Error:', mailErr);
+    }
+
     res.status(200).json({
-      message: `OTP code generated for ${email}`,
-      otp
+      message: `OTP verification email sent to ${email}`,
+      previewUrl: emailResult?.previewUrl || null
     });
   } catch (error) {
     next(error);

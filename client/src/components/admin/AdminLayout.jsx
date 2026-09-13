@@ -168,10 +168,16 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
   };
 
   const unreadCount = notifications.filter((n) => n.unread).length;
+  const [profileOtpStep, setProfileOtpStep] = useState(1);
+  const [profileOtpCode, setProfileOtpCode] = useState('');
+  const [profileNewPassword, setProfileNewPassword] = useState('');
+  const [profileOtpMsg, setProfileOtpMsg] = useState('');
+  const [profileOtpErr, setProfileOtpErr] = useState('');
 
   const handleForgotPasswordClick = async () => {
     setOtpLoading(true);
-    setOtpSentMsg('');
+    setProfileOtpMsg('');
+    setProfileOtpErr('');
     try {
       const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
         method: 'POST',
@@ -180,9 +186,37 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to send OTP');
-      setOtpSentMsg('✅ 6-digit OTP reset code sent to hridoy.islam.webflow@gmail.com!');
+      setProfileOtpCode('');
+      setProfileOtpMsg(`✉️ 6-digit OTP code sent to hridoy.islam.webflow@gmail.com. Please check your email inbox and enter the code below.`);
+      setProfileOtpStep(2);
     } catch (err) {
-      setOtpSentMsg(`❌ ${err.message}`);
+      setProfileOtpErr(`❌ ${err.message}`);
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleProfileResetPassword = async (e) => {
+    e.preventDefault();
+    setOtpLoading(true);
+    setProfileOtpMsg('');
+    setProfileOtpErr('');
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'hridoy.islam.webflow@gmail.com',
+          otp: profileOtpCode,
+          newPassword: profileNewPassword
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to reset password');
+      setProfileOtpMsg('🎉 Password successfully reset! You can now log in with your new password.');
+      setProfileNewPassword('');
+    } catch (err) {
+      setProfileOtpErr(`❌ ${err.message}`);
     } finally {
       setOtpLoading(false);
     }
@@ -651,36 +685,83 @@ export const AdminLayout = ({ children, title = 'Users & Staff' }) => {
             {/* Forget Password Form */}
             <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px' }}>
               <div style={{ fontSize: '13px', fontWeight: 700, color: '#9a3412', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                🔑 Password Recovery
+                🔑 Password Recovery via OTP
               </div>
-              <p style={{ fontSize: '12px', color: '#7c2d12', margin: '0 0 10px' }}>
-                Send a 6-digit OTP code to your super admin email address to reset password.
-              </p>
 
-              {otpSentMsg && (
-                <div style={{ fontSize: '12px', padding: '8px', borderRadius: '8px', background: '#ffffff', border: '1px solid #fdba74', marginBottom: '10px' }}>
-                  {otpSentMsg}
+              {profileOtpMsg && <div style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0', padding: 10, borderRadius: 8, fontSize: 12, marginBottom: 10, fontWeight: 600 }}>{profileOtpMsg}</div>}
+              {profileOtpErr && <div style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', padding: 10, borderRadius: 8, fontSize: 12, marginBottom: 10, fontWeight: 600 }}>{profileOtpErr}</div>}
+
+              {profileOtpStep === 1 ? (
+                <div>
+                  <p style={{ fontSize: '12px', color: '#7c2d12', margin: '0 0 10px' }}>
+                    Generate a 6-digit OTP reset code for your super admin account.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleForgotPasswordClick}
+                    disabled={otpLoading}
+                    style={{
+                      width: '100%',
+                      background: '#ea580c',
+                      color: '#ffffff',
+                      border: 0,
+                      borderRadius: '8px',
+                      padding: '9px 14px',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {otpLoading ? 'Generating OTP...' : '🔑 Generate OTP Code'}
+                  </button>
                 </div>
-              )}
+              ) : (
+                <form onSubmit={handleProfileResetPassword} style={{ display: 'grid', gap: '10px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', fontWeight: 700, color: '#9a3412', display: 'block', marginBottom: 4 }}>
+                      6-DIGIT OTP CODE
+                    </label>
+                    <input
+                      type="text"
+                      value={profileOtpCode}
+                      onChange={(e) => setProfileOtpCode(e.target.value)}
+                      required
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #fdba74', fontSize: '13px', background: '#ffffff', outline: 'none', fontWeight: 700, letterSpacing: 2, textAlign: 'center' }}
+                    />
+                  </div>
 
-              <button
-                type="button"
-                onClick={handleForgotPasswordClick}
-                disabled={otpLoading}
-                style={{
-                  width: '100%',
-                  background: '#ea580c',
-                  color: '#ffffff',
-                  border: 0,
-                  borderRadius: '8px',
-                  padding: '9px 14px',
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
-              >
-                {otpLoading ? 'Sending OTP Code...' : '🔑 Send Forget Password OTP Email'}
-              </button>
+                  <div>
+                    <label style={{ fontSize: '11px', fontWeight: 700, color: '#9a3412', display: 'block', marginBottom: 4 }}>
+                      ENTER NEW PASSWORD
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="Enter new password"
+                      value={profileNewPassword}
+                      onChange={(e) => setProfileNewPassword(e.target.value)}
+                      required
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #fdba74', fontSize: '13px', background: '#ffffff', outline: 'none' }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setProfileOtpStep(1)}
+                      style={{ background: '#f3f4f6', color: '#374151', border: 0, borderRadius: '8px', padding: '8px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      ← Back
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={otpLoading}
+                      style={{ flex: 1, background: '#10b981', color: '#ffffff', border: 0, borderRadius: '8px', padding: '8px 14px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      {otpLoading ? 'Updating Password...' : 'Confirm & Set New Password →'}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
 
             {/* Close Button */}
