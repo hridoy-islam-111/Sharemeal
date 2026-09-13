@@ -181,7 +181,11 @@ export const Home = () => {
             <Link to="/find-food" className="nav-link-item" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
               Find food
             </Link>
-            <Link to="/donate" className="nav-link-item" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
+            <Link
+              to={user ? (user.role === 'donor' ? '/donor/profile' : `/${user.role}/dashboard`) : '/donate'}
+              className="nav-link-item"
+              style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}
+            >
               Donate
             </Link>
             <a href="#stories" className="nav-link-item" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
@@ -284,7 +288,7 @@ export const Home = () => {
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '36px' }}>
               <Link
-                to="/donate"
+                to={user ? (user.role === 'donor' ? '/donor/profile' : `/${user.role}/dashboard`) : '/donate'}
                 className="btn-primary-hover"
                 style={{
                   textDecoration: 'none',
@@ -1034,7 +1038,7 @@ export const Home = () => {
               Post surplus from your kitchen, restaurant or event. Local verified groups pick it up fast.
             </p>
             <Link
-              to="/donate"
+              to={user ? (user.role === 'donor' ? '/donor/profile' : `/${user.role}/dashboard`) : '/donate'}
               className="btn-secondary-hover"
               style={{
                 textDecoration: 'none',
@@ -1207,7 +1211,15 @@ export const Home = () => {
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '10px', fontSize: '13px', color: '#6b5d56' }}>
                 <li><Link to="/find-food" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>Find food</Link></li>
-                <li><Link to="/donate" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>Donate food</Link></li>
+                <li>
+                  <Link
+                    to={user ? (user.role === 'donor' ? '/donor/profile' : `/${user.role}/dashboard`) : '/donate'}
+                    className="footer-link"
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    Donate food
+                  </Link>
+                </li>
                 <li><Link to="/ngo/login" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>For NGOs</Link></li>
                 <li><a href="#how-it-works" className="footer-link" style={{ textDecoration: 'none', color: 'inherit' }}>How it works</a></li>
                 <li><span style={{ color: '#aaa' }}>Pricing (Free)</span></li>

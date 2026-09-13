@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import AuthHeroPanel from '../../components/auth/AuthHeroPanel';
 import LoginForm from '../../components/auth/LoginForm';
 
 export const Login = () => {
+  const [searchParams] = useSearchParams();
+  const redirectTarget = searchParams.get('redirect');
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login, googleLogin } = useAuth();
@@ -18,11 +21,19 @@ export const Login = () => {
       const data = await login(credentials);
       const role = data.user?.role || 'donor';
 
-      if (role === 'donor') navigate('/donor/post-food');
-      else if (role === 'ngo') navigate('/ngo/dashboard');
-      else if (role === 'receiver') navigate('/receiver/dashboard');
-      else if (role === 'admin') navigate('/admin/dashboard');
-      else navigate('/');
+      if (redirectTarget) {
+        navigate(redirectTarget);
+      } else if (role === 'donor') {
+        navigate('/donor/profile');
+      } else if (role === 'ngo') {
+        navigate('/ngo/dashboard');
+      } else if (role === 'receiver') {
+        navigate('/receiver/dashboard');
+      } else if (role === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Login failed');
     } finally {
@@ -38,11 +49,19 @@ export const Login = () => {
       const data = await googleLogin(idToken, 'donor');
       const role = data.user?.role || 'donor';
 
-      if (role === 'donor') navigate('/donor/post-food');
-      else if (role === 'ngo') navigate('/ngo/dashboard');
-      else if (role === 'receiver') navigate('/receiver/dashboard');
-      else if (role === 'admin') navigate('/admin/dashboard');
-      else navigate('/');
+      if (redirectTarget) {
+        navigate(redirectTarget);
+      } else if (role === 'donor') {
+        navigate('/donor/profile');
+      } else if (role === 'ngo') {
+        navigate('/ngo/dashboard');
+      } else if (role === 'receiver') {
+        navigate('/receiver/dashboard');
+      } else if (role === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Google login failed');
     } finally {

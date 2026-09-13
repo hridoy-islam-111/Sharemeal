@@ -31,7 +31,10 @@ export const Navbar = () => {
           <Link to="/find-food" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
             Find food
           </Link>
-          <Link to="/donate" style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}>
+          <Link
+            to={user ? (user.role === 'donor' ? '/donor/profile' : `/${user.role}/dashboard`) : '/donate'}
+            style={{ textDecoration: 'none', color: '#6b5d56', fontSize: '14px', fontWeight: 600 }}
+          >
             Donate
           </Link>
           

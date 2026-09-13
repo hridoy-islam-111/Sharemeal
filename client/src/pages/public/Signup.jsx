@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import AuthHeroPanel from '../../components/auth/AuthHeroPanel';
 import RoleSelector from '../../components/auth/RoleSelector';
 import SignupForm from '../../components/auth/SignupForm';
 
 export const Signup = () => {
-  const [step, setStep] = useState(1);
-  const [role, setRole] = useState('donor');
+  const [searchParams] = useSearchParams();
+  const queryRole = searchParams.get('role');
+  const queryStep = searchParams.get('step');
+  const redirectTarget = searchParams.get('redirect');
+
+  const [step, setStep] = useState(queryStep ? parseInt(queryStep, 10) : (queryRole ? 2 : 1));
+  const [role, setRole] = useState(queryRole || 'donor');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -22,9 +27,15 @@ export const Signup = () => {
       const data = await register(formData);
       const userRole = data.user?.role || role;
 
-      if (userRole === 'donor') navigate('/donor/post-food');
-      else if (userRole === 'receiver') navigate('/receiver/dashboard');
-      else navigate('/');
+      if (redirectTarget) {
+        navigate(redirectTarget);
+      } else if (userRole === 'donor') {
+        navigate('/donor/profile');
+      } else if (userRole === 'receiver') {
+        navigate('/receiver/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Registration failed');
     } finally {
@@ -40,9 +51,15 @@ export const Signup = () => {
       const data = await googleLogin(idToken, role);
       const userRole = data.user?.role || role;
 
-      if (userRole === 'donor') navigate('/donor/post-food');
-      else if (userRole === 'receiver') navigate('/receiver/dashboard');
-      else navigate('/');
+      if (redirectTarget) {
+        navigate(redirectTarget);
+      } else if (userRole === 'donor') {
+        navigate('/donor/profile');
+      } else if (userRole === 'receiver') {
+        navigate('/receiver/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Google sign-up failed');
     } finally {
