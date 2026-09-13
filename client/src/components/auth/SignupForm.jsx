@@ -143,14 +143,14 @@ export const SignupForm = ({ role, onSubmit, onGoogleSuccess, loading, error }) 
         </div>
 
         <div className="auth-input-group">
-          <label>NID / ID Document (PDF or Image) <span className="required">*</span></label>
+          <label>NID / ID Document (PDF or Image)</label>
           <div className="auth-input-wrapper">
             <span className="auth-input-icon">📤</span>
             <input
               type="file"
               accept="application/pdf,image/*"
               onChange={(e) => setNidPdf(e.target.files[0] || null)}
-              required
+              
             />
           </div>
         </div>
